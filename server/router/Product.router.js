@@ -135,8 +135,8 @@ router.route('/getproductbycategory/:categoryid')
 
 router.route('/:productId')
   .get(getOneProduct)
-  .put(authenticateToken, checkSubscription,  deleteOldImageMiddleware, updateProduct)
-  .delete(authenticateToken, checkSubscription, deleteImageProductMiddleware, deleteProduct);
+  .put(authenticateToken, checkSubscription, updateProduct)
+  .delete(authenticateToken, checkSubscription, deleteProduct);
 
 
 
