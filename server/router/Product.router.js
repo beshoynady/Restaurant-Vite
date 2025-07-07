@@ -139,5 +139,4 @@ router.route('/:productId')
   .delete(authenticateToken, checkSubscription, deleteProduct);
 
 
-
 module.exports = router;
