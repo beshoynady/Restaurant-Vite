@@ -10,8 +10,8 @@ const {
   deleteProductionRecord,
 } = require("../controllers/ProductionRecord.controller.js");
 
-const { authenticateToken } = require("../utlits/authenticate");
-const checkSubscription = require("../utlits/checkSubscription");
+const { authenticateToken } = require("../utlits/authenticate.js");
+const checkSubscription = require("../utlits/checkSubscription.js");
 
 
 // Create a new Production Record
