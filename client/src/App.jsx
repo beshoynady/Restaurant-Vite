@@ -2318,34 +2318,34 @@ const apiUrl = import.meta.env.VITE_API_URL;
     };
   }, []);
 
-  useEffect(() => {
-    if (isOnline) {
-      const handleConnectError = (error) => {
-        console.error("Socket connection error:", error);
-        toast.error("هناك مشكلة في نظام الإشعارات");
-      };
+  // useEffect(() => {
+  //   if (isOnline) {
+  //     const handleConnectError = (error) => {
+  //       console.error("Socket connection error:", error);
+  //       toast.error("هناك مشكلة في نظام الإشعارات");
+  //     };
 
-      cashierSocket.on("connect_error", handleConnectError);
-      kitchenSocket.on("connect_error", handleConnectError);
-      GrillSocket.on("connect_error", handleConnectError);
-      BarSocket.on("connect_error", handleConnectError);
-      waiterSocket.on("connect_error", handleConnectError);
+  //     cashierSocket.on("connect_error", handleConnectError);
+  //     kitchenSocket.on("connect_error", handleConnectError);
+  //     GrillSocket.on("connect_error", handleConnectError);
+  //     BarSocket.on("connect_error", handleConnectError);
+  //     waiterSocket.on("connect_error", handleConnectError);
 
-      return () => {
-        cashierSocket.off("connect_error", handleConnectError);
-        kitchenSocket.off("connect_error", handleConnectError);
-        GrillSocket.off("connect_error", handleConnectError);
-        BarSocket.off("connect_error", handleConnectError);
-        waiterSocket.off("connect_error", handleConnectError);
+  //     return () => {
+  //       cashierSocket.off("connect_error", handleConnectError);
+  //       kitchenSocket.off("connect_error", handleConnectError);
+  //       GrillSocket.off("connect_error", handleConnectError);
+  //       BarSocket.off("connect_error", handleConnectError);
+  //       waiterSocket.off("connect_error", handleConnectError);
 
-        cashierSocket.disconnect();
-        kitchenSocket.disconnect();
-        GrillSocket.disconnect();
-        BarSocket.disconnect();
-        waiterSocket.disconnect();
-      };
-    }
-  }, []);
+  //       cashierSocket.disconnect();
+  //       kitchenSocket.disconnect();
+  //       GrillSocket.disconnect();
+  //       BarSocket.disconnect();
+  //       waiterSocket.disconnect();
+  //     };
+  //   }
+  // }, []);
 
   // تحديث التكلفة عند تغير الحالة
   useEffect(() => {
@@ -2871,5 +2871,6 @@ const apiUrl = import.meta.env.VITE_API_URL;
     </dataContext.Provider>
   );
 }
+
 
 export default App;
