@@ -62,6 +62,8 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(express.json({ limit: "100kb" })); // Limit request body size
 app.use(cookieParser()); // Parse cookies
 
+app.set('trust proxy', 1);
+
 // CORS setup
 app.use(
   cors({
