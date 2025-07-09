@@ -68,8 +68,8 @@ app.set('trust proxy', 1);
 app.use(
   cors({
     origin: [
-      "https://https://restaurant-vite-zeta.vercel.app",
-      "https://www.restaurant-vite-zeta.vercel.app/",
+      "https://restaurant-vite-zeta.vercel.app",
+      "https://www.restaurant-vite-zeta.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
@@ -140,7 +140,7 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: [
-      "https://https://restaurant-vite-zeta.vercel.app",
+      "https://restaurant-vite-zeta.vercel.app",
       "https://www.restaurant-vite-zeta.vercel.app",
     ],
     methods: ["GET", "POST"],
