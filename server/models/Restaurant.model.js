@@ -18,6 +18,11 @@ const restaurantSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    isActive: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     locationUrl: {
       type: String,
       trim: true,

@@ -24,6 +24,7 @@ const createRestaurant = async (req, res) => {
       subscriptionEnd,
       salesTaxRate,
       serviceTaxRate,
+      isActive
     } = req.body;
 
     const image = req.file ? req.file.filename : null;
@@ -55,6 +56,7 @@ const createRestaurant = async (req, res) => {
       subscriptionEnd,
       salesTaxRate,
       serviceTaxRate,
+      isActive
     });
 
     return res.status(201).json(restaurant);
@@ -142,6 +144,7 @@ const updateRestaurant = async (req, res) => {
       subscriptionEnd,
       salesTaxRate,
       serviceTaxRate,
+      isActive
     } = req.body;
 
     // التحقق من صحة معرّف المطعم
@@ -181,6 +184,7 @@ const updateRestaurant = async (req, res) => {
         subscriptionEnd,
         salesTaxRate,
         serviceTaxRate,
+        isActive
       },
       { new: true, runValidators: true }
     );

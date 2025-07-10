@@ -226,6 +226,7 @@ const Info = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setimage] = useState("");
+  const [isActive, setisActive] = useState(false);
   const [aboutText, setaboutText] = useState("");
   const [website, setwebsite] = useState("");
   const [locationUrl, setlocationUrl] = useState("");
@@ -892,6 +893,7 @@ const Info = () => {
                   </div>
 
                   <div className="form-group h-auto px-3 d-flex flex-nowrap align-items-center justify-content-start col-12 col-md-6 ">
+
                     <label className="form-label col-3 p-0 m-0">
                       رابط المنيو
                     </label>
@@ -902,6 +904,18 @@ const Info = () => {
                         defaultValue={website}
                         required
                         onChange={(e) => setwebsite(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group h-auto px-3 d-flex flex-nowrap align-items-center justify-content-start col-12 col-md-6 ">
+                    <div className="form-check ps-4 py-2 bg-light border rounded shadow-sm">
+                      <label className="form-check-label mr-4">اظهار المنيو للعميل</label>
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={isActive}
+                        onChange={() => setisActive(!isActive)}
                       />
                     </div>
                   </div>
@@ -998,50 +1012,71 @@ const Info = () => {
                     </div>
                   </div>
 
-                  <div className="col-12 col-lg-6 d-flex flex-wrap">
-                    <div className="form-check form-check-flat mb-2 mr-4 d-flex align-items-center w-50">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={dineIn}
-                        onChange={() => setdineIn(!dineIn)}
-                      />
-                      <label className="form-check-label mr-4">الصالة</label>
+                  <div className="row g-3">
+                    <div className="col-12 col-md-6">
+                      <div className="form-check ps-4 py-2 bg-light border rounded shadow-sm">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="dineIn"
+                          checked={dineIn}
+                          onChange={() => setdineIn(!dineIn)}
+                        />
+                        <label className="form-check-label fw-bold ms-2" htmlFor="dineIn">
+                          الصالة
+                        </label>
+                      </div>
                     </div>
-                    <div className="form-check form-check-flat mb-2 mr-4 d-flex align-items-center w-50">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={takeAway}
-                        onChange={() => settakeAway(!takeAway)}
-                      />
-                      <label className="form-check-label mr-4">التيك اوي</label>
+
+                    <div className="col-12 col-md-6">
+                      <div className="form-check ps-4 py-2 bg-light border rounded shadow-sm">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="takeAway"
+                          checked={takeAway}
+                          onChange={() => settakeAway(!takeAway)}
+                        />
+                        <label className="form-check-label fw-bold ms-2" htmlFor="takeAway">
+                          التيك أوي
+                        </label>
+                      </div>
                     </div>
-                    <div className="form-check form-check-flat mb-2 mr-4 d-flex align-items-center w-50">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={deliveryService}
-                        onChange={() => setdeliveryService(!deliveryService)}
-                      />
-                      <label className="form-check-label mr-4">
-                        خدمة التوصيل
-                      </label>
+
+                    <div className="col-12 col-md-6">
+                      <div className="form-check ps-4 py-2 bg-light border rounded shadow-sm">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="deliveryService"
+                          checked={deliveryService}
+                          onChange={() => setdeliveryService(!deliveryService)}
+                        />
+                        <label className="form-check-label fw-bold ms-2" htmlFor="deliveryService">
+                          خدمة التوصيل
+                        </label>
+                      </div>
                     </div>
-                    <div className="form-check form-check-flat mb-2 mr-4 d-flex align-items-center w-50">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={usesReservationSystem}
-                        onChange={() =>
-                          setusesReservationSystem(!usesReservationSystem)
-                        }
-                      />
-                      <label className="form-check-label mr-4">
-                        حجز الطاولة
-                      </label>
+
+                    <div className="col-12 col-md-6">
+                      <div className="form-check ps-4 py-2 bg-light border rounded shadow-sm">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="usesReservationSystem"
+                          checked={usesReservationSystem}
+                          onChange={() => setusesReservationSystem(!usesReservationSystem)}
+                        />
+                        <label
+                          className="form-check-label fw-bold ms-2"
+                          htmlFor="usesReservationSystem"
+                        >
+                          حجز الطاولة
+                        </label>
+                      </div>
                     </div>
                   </div>
+
 
                   <div
                     className="col-12 d-flex flex-nowrap align-items-center justify-consten-between "
@@ -1601,9 +1636,8 @@ const Info = () => {
                             />
                           </div>
                           <div className="col-md-2 col-6 mb-2 mb-md-0">
-                            <p className="form-control-plaintext">{`${
-                              shift.hours > 0 ? shift.hours : 0
-                            } ساعات`}</p>
+                            <p className="form-control-plaintext">{`${shift.hours > 0 ? shift.hours : 0
+                              } ساعات`}</p>
                           </div>
                           <div className="col-md-1 col-6 m-0 p-0">
                             <button

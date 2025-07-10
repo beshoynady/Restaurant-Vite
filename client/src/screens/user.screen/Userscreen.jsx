@@ -10,6 +10,7 @@ import Contact from "./component/contact/Contact";
 import Reservation from "./component/reservations/Reservation";
 import Footer from "./component/footer/Footer";
 import { dataContext } from "../../App";
+import Offline from "./offline"
 
 const Userscreen = () => {
   const {
@@ -17,8 +18,9 @@ const Userscreen = () => {
     allProducts,
     productsOffer,
     sizesOffer, handleGetTokenAndConfig, apiUrl } = useContext(dataContext)
-
-  return (
+{restaurantData.isActive?
+<Offline/>
+  :  (
     <div className="userscreen" style={{ direction: "rtl" }}>
       <ToastContainer />
       <Header />
@@ -31,6 +33,8 @@ const Userscreen = () => {
       <Footer />
     </div>
   );
+}
+ 
 };
 
 export default Userscreen;
