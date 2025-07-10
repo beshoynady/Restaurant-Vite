@@ -411,6 +411,7 @@ const Info = () => {
         usesReservationSystem,
         salesTaxRate,
         serviceTaxRate,
+        isActive
       };
       console.log({ requestData });
       let response;
