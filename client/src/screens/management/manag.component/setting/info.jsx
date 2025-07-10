@@ -908,14 +908,14 @@ const Info = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-12">
+                  <div className="form-group h-auto px-3 d-flex flex-nowrap align-items-center justify-content-start col-12 col-md-6 ">
                     <div className="form-check form-switch d-flex align-items-center gap-3 p-3 bg-light rounded shadow-sm border">
                       <input
                         className="form-check-input fs-5"
                         type="checkbox"
                         id="isActive"
                         checked={isActive}
-                        onChange={() => setIsActive(!isActive)}
+                        onChange={() => setisActive(!isActive)}
                       />
                       <label className="form-check-label fw-semibold" htmlFor="isActive">
                         {isActive ? "المنيو مفعل للعميل ✅" : "المنيو غير مفعل ❌"}
