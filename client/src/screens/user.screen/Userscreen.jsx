@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { ToastContainer } from "react-toastify";
 import "./Userscreen.css";
+
 import Header from "./component/header/Header";
 import Home from "./component/home/Home";
 import Offers from "./component/offers/Offers";
@@ -9,18 +10,25 @@ import Location from "./component/location/Location";
 import Contact from "./component/contact/Contact";
 import Reservation from "./component/reservations/Reservation";
 import Footer from "./component/footer/Footer";
+import Offline from "./offline";
+
 import { dataContext } from "../../App";
-import Offline from "./offline"
 
 const Userscreen = () => {
   const {
     restaurantData,
     allProducts,
     productsOffer,
-    sizesOffer, handleGetTokenAndConfig, apiUrl } = useContext(dataContext)
-{restaurantData.isActive?
-<Offline/>
-  :  (
+    sizesOffer,
+  } = useContext(dataContext);
+
+  // عرض صفحة Offline إذا كان isActive = false
+  if (!restaurantData?.isActive) {
+    return <Offline />;
+  }
+
+  // إذا المطعم مفعل
+  return (
     <div className="userscreen" style={{ direction: "rtl" }}>
       <ToastContainer />
       <Header />
@@ -33,8 +41,6 @@ const Userscreen = () => {
       <Footer />
     </div>
   );
-}
- 
 };
 
 export default Userscreen;
