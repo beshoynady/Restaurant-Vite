@@ -8,7 +8,8 @@ import LoginRegistr from '../auth/LoginRegistr';
 
 
 const Header = () => {
-  const {restaurantData,apiUrl, userLoginInfo, itemsInCart ,productsOffer, sizesOffer} = useContext(dataContext)
+  const { restaurantData, allMenuCategories, apiUrl, userLoginInfo, itemsInCart,
+     productsOffer, sizesOffer } = useContext(dataContext)
   const { id } = useParams();
   const [opencart, setopencart] = useState(false);
   const [openlogin, setopenlogin] = useState(false);
@@ -17,7 +18,7 @@ const Header = () => {
     try {
       // Remove user token from local storage
       localStorage.removeItem('token_u');
-      
+
       // Redirect to home page
       window.location.href = `https://${window.location.hostname}`;
     } catch (error) {
@@ -27,15 +28,15 @@ const Header = () => {
       alert('حدث خطأ أثناء تسجيل الخروج. يرجى المحاولة مرة أخرى.');
     }
   }
-  
+
   const navref = useRef();
 
   const toggleMobileMenu = () => {
     navref.current.classList.toggle("show");
   };
-  
+
   const [isScroll, setisScroll] = useState(false)
-  
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -47,56 +48,65 @@ const Header = () => {
     };
   }, []);
 
+  const hasContactData =
+      restaurantData?.contact?.whatsapp ||
+      restaurantData?.contact?.phone ||
+      (restaurantData?.social_media && restaurantData.social_media.length > 0);
+
   return (
-        <header className={`header-client ${isScroll ? 'scroll' : ''}`}>
-          <div className="container-lg">
-              <div className="mob-menu" onClick={toggleMobileMenu}>
-                <span id='line-1'></span>
-                <span id='line-2'></span>
-                <span id='line-3'></span>
-              </div>
-            <div className='logo'>
-              {restaurantData.image?
-              <img src={`${apiUrl}/images/${restaurantData.image}`} alt={restaurantData.name} />
-              :<a href="/" className='res-name'>{restaurantData.name}</a>
-              }
-            </div>
-            <nav ref={navref} className='nav'>
-              <ul className='navigator borderYtoX'>
-                <li onClick={toggleMobileMenu}><a href="#main">الرئيسيه</a></li>
-                <li onClick={toggleMobileMenu}><a href="#menu">قائمة الطعام</a></li>
-                {(productsOffer.length > 0 || sizesOffer.length > 0) && <li onClick={toggleMobileMenu}><a href="#offer">العروض</a></li>}                
-                
-                {restaurantData.usesReservationSystem && 
-                <li onClick={toggleMobileMenu}><a href="#reservation">حجز الطاولات</a></li>
-                }
-                <li onClick={toggleMobileMenu}><a href="#location">موقعنا</a></li>
-                <li onClick={toggleMobileMenu}><a href="#contact">تواصل معنا</a></li>
-              </ul>
-            </nav>
-            <div className='left-nav'>
-              {!id && (
-                <>
-                  {userLoginInfo && userLoginInfo.userinfo ? (
-                    <div className="nav-logout" onClick={logout}> خروج
-                      <span className="material-symbols-outlined">logout</span>
-                    </div>
-                  ) : (
-                    <div className='nav-login' onClick={() => {setopenlogin(!openlogin) ; setopencart(false)}}>دخول<span className="material-symbols-outlined">
-                      login
-                    </span></div>
-                  )}
-                </>
+    <header className={`header-client ${isScroll ? 'scroll' : ''}`}>
+      <div className="container-lg">
+        <div className="mob-menu" onClick={toggleMobileMenu}>
+          <span id='line-1'></span>
+          <span id='line-2'></span>
+          <span id='line-3'></span>
+        </div>
+        <div className='logo'>
+          {restaurantData.image ?
+            <img src={`${apiUrl}/images/${restaurantData.image}`} alt={restaurantData.name} />
+            : <a href="/" className='res-name'>{restaurantData.name}</a>
+          }
+        </div>
+        <nav ref={navref} className='nav'>
+          <ul className='navigator borderYtoX'>
+            <li onClick={toggleMobileMenu}><a href="#main">الرئيسيه</a></li>
+            {allMenuCategories && allMenuCategories.length > 0 &&
+              <li onClick={toggleMobileMenu}><a href="#menu">قائمة الطعام</a></li>
+            }
+            {(productsOffer.length > 0 || sizesOffer.length > 0) && <li onClick={toggleMobileMenu}><a href="#offer">العروض</a></li>}
+
+            {restaurantData.usesReservationSystem &&
+              <li onClick={toggleMobileMenu}><a href="#reservation">حجز الطاولات</a></li>
+            }
+            <li onClick={toggleMobileMenu}><a href="#location">موقعنا</a></li>
+            {hasContactData &&
+            <li onClick={toggleMobileMenu}><a href="#contact">تواصل معنا</a></li>
+            }
+          </ul>
+        </nav>
+        <div className='left-nav'>
+          {!id && (
+            <>
+              {userLoginInfo && userLoginInfo.userinfo ? (
+                <div className="nav-logout" onClick={logout}> خروج
+                  <span className="material-symbols-outlined">logout</span>
+                </div>
+              ) : (
+                <div className='nav-login' onClick={() => { setopenlogin(!openlogin); setopencart(false) }}>دخول<span className="material-symbols-outlined">
+                  login
+                </span></div>
               )}
-              <div className='cart-icon' onClick={() => {setopencart(!opencart); setopenlogin(false)}}>
-                <span className="material-symbols-rounded shopping_cart">shopping_cart</span>
-                <span className='cartcounter'>{itemsInCart.length}</span>
-              </div>
-              <LoginRegistr openlogin={openlogin} />
-              <Cart opencart={opencart} />
-            </div>
+            </>
+          )}
+          <div className='cart-icon' onClick={() => { setopencart(!opencart); setopenlogin(false) }}>
+            <span className="material-symbols-rounded shopping_cart">shopping_cart</span>
+            <span className='cartcounter'>{itemsInCart.length}</span>
           </div>
-        </header>
+          <LoginRegistr openlogin={openlogin} />
+          <Cart opencart={opencart} />
+        </div>
+      </div>
+    </header>
   );
 };
 

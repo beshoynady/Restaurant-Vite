@@ -55,6 +55,12 @@ const Contact = () => {
     }
   };
 
+   const hasContactData =
+    restaurantData?.contact?.whatsapp ||
+    restaurantData?.contact?.phone ||
+    (restaurantData?.social_media && restaurantData.social_media.length > 0);
+  if (!hasContactData) return null;
+
   return (
     <section className="contact" id="contact">
       <div className="container">
