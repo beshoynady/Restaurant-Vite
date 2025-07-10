@@ -908,20 +908,27 @@ const Info = () => {
                     </div>
                   </div>
 
-                  <div className="form-group h-auto px-3 d-flex flex-nowrap align-items-center justify-content-start col-12 col-md-6 ">
-                    <div className="form-check form-switch d-flex align-items-center gap-3 p-3 bg-light rounded shadow-sm border">
+                  <div className="form-group col-12 col-md-6 px-3">
+                    <div className="form-check form-switch d-flex align-items-center gap-3 p-3 bg-light border rounded-3 shadow-sm">
                       <input
-                        className="form-check-input fs-5"
+                        className="form-check-input fs-4"
                         type="checkbox"
                         id="isActive"
                         checked={isActive}
                         onChange={() => setisActive(!isActive)}
+                        style={{ cursor: "pointer" }}
                       />
-                      <label className="form-check-label fw-semibold" htmlFor="isActive">
-                        {isActive ? "المنيو مفعل للعميل ✅" : "المنيو غير مفعل ❌"}
+                      <label
+                        className={`form-check-label fw-bold ${isActive ? "text-success" : "text-danger"
+                          }`}
+                        htmlFor="isActive"
+                        style={{ fontSize: "1.1rem" }}
+                      >
+                        {isActive ? "✅ المنيو مفعل للعميل" : "❌ المنيو غير مفعل للعميل"}
                       </label>
                     </div>
                   </div>
+
 
                   <div className="form-group h-auto px-3 d-flex flex-nowrap align-items-center justify-content-start col-12 col-md-6 ">
                     <label className="form-label col-3 p-0 m-0">
