@@ -289,7 +289,7 @@ const NavBar = () => {
     >
       {/* <input type="checkbox" className="form-check-input form-check-input-lg" id="theme-toggle" hidden />
       <label htmlFor="theme-toggle" className="theme-toggle" onClick={toggleDir}></label> */}
-      <div className="navbar-nav ms-auto flex-row">
+      <div className="navbar-nav w-100 ms-auto flex-row">
         <div className="nav-item mx-1 dropdown">
           <a
             className="nav-link d-flex align-items-center text-light"
