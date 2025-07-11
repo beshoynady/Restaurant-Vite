@@ -285,7 +285,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
     const time = new Date(timeString);
     let hours = time.getHours();
     const minutes = time.getMinutes();
-    const ampm = hours >= 12 ? "م" : "ص";
+    const ampm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12;
     hours = hours ? hours : 12;
     const formattedTime = `${hours}:${
@@ -300,7 +300,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
     let minutes = date.getMinutes();
 
     // Convert the hour to 12-hour format
-    const ampm = hours >= 12 ? "م" : "ص";
+    const ampm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12;
     hours = hours ? hours : 12; // 12-hour format 12 denotes noon
 
