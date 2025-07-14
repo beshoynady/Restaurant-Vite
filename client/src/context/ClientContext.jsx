@@ -97,8 +97,8 @@ const createDeliveryOrderByClient = async (
             config
           );
 
-          setitemsInCart([]);
-          setitemId([]);
+          setItemsInCart([]);
+          setItemsInCart([]);
           getAllProducts();
           cashierSocket.emit(
             "neworder",
@@ -125,7 +125,7 @@ const createDeliveryOrderByClient = async (
             config
           );
 
-          setitemsInCart([]);
+          setItemsInCart([]);
           getAllProducts();
           cashierSocket.emit("neworder", "تم تعديل ارودر ديفرري");
           toast.success("تم تعديل الاوردر بنجاح!");
@@ -164,16 +164,16 @@ const createDeliveryOrderByClient = async (
           config
         );
 
-        setitemsInCart([]);
-        setitemId([]);
+        setItemsInCart([]);
+        setItemsInCart([]);
         getAllProducts();
         toast.success("تم عمل اوردر جديد بنجاح!");
         cashierSocket.emit("neworder", "اوردر ديليفري جديد");
         setIsLoading(false);
       }
 
-      setitemsInCart([]);
-      setitemId([]);
+      setItemsInCart([]);
+      setItemsInCart([]);
       setIsLoading(false);
     } catch (error) {
       console.error("An error occurred while processing the order:", error);
@@ -287,8 +287,8 @@ const createDeliveryOrderByClient = async (
       }
 
       // Reset cart items and reload products
-      setitemsInCart([]);
-      setitemId([]);
+      setItemsInCart([]);
+      setItemsInCart([]);
       getAllProducts();
     } catch (error) {
       console.error(error);
@@ -344,7 +344,7 @@ const createDeliveryOrderByClient = async (
           setorderUpdateDate(data.updatedAt);
           setorderTotal(data.total);
           setorderSubtotal(data.subTotal);
-          setitemsInCart([]);
+          setItemsInCart([]);
         } else if (lastUserOrderActive) {
           const orderId = lastUserOrder._id;
           const myOrder = await axios.get(`${apiUrl}/api/order/${orderId}`);
@@ -358,7 +358,7 @@ const createDeliveryOrderByClient = async (
           setorderTotal(data.total);
           setorderSubtotal(data.subTotal);
           setorderdeliveryFee(data.deliveryFee);
-          setitemsInCart([]);
+          setItemsInCart([]);
         } else {
           toast.info("لا توجد طلبات نشطة لهذا العميل");
         }

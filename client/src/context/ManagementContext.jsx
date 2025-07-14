@@ -319,8 +319,8 @@ export const ManagementProvider = ({Children}) => {
           );
           toast.success("تم تحديث الطلب بنجاح!");
           cashierSocket.emit("neworder", "اوردر جديد من الويتر");
-          setitemsInCart([]);
-          setitemId([]);
+          setItemsInCart([]);
+          setItemsInCart([]);
           setaddition(0);
           setdiscount(0);
           setclientname("");
@@ -359,8 +359,8 @@ export const ManagementProvider = ({Children}) => {
   
           toast.success("تم إنشاء طلب جديد بنجاح!");
           cashierSocket.emit("neworder", "اوردر جديد من الويتر");
-          setitemsInCart([]);
-          setitemId([]);
+          setItemsInCart([]);
+          setItemsInCart([]);
           setaddition(0);
           setdiscount(0);
           setclientname("");
@@ -453,8 +453,8 @@ export const ManagementProvider = ({Children}) => {
   
         if (newOrder) {
           toast.success("تم إنشاء الطلب بنجاح");
-          setitemsInCart([]);
-          setitemId([]);
+          setItemsInCart([]);
+          setItemsInCart([]);
           setaddition(0);
           setdiscount(0);
           setclientname("");
@@ -652,7 +652,7 @@ export const ManagementProvider = ({Children}) => {
           setorderdiscount(orderData.discount);
           setorderSubtotal(orderData.subTotal);
           setorderdeliveryFee(orderData.deliveryFee);
-          setitemsInCart([]);
+          setItemsInCart([]);
         }
       } else {
         // Handle the case when there are no orders for the employee
@@ -670,7 +670,7 @@ export const ManagementProvider = ({Children}) => {
     //######### get order ditalis by serial
 
   const [orderDetalisBySerial, setorderDetalisBySerial] = useState({});
-  const [productOrderToUpdate, setproductOrderToUpdate] = useState([]);
+  const [productOrderToUpdate, setProductOrderToUpdate] = useState([]);
 
   const getOrderDetailsBySerial = async (e, serial) => {
     e.preventDefault();
@@ -697,7 +697,7 @@ export const ManagementProvider = ({Children}) => {
       }
 
       setorderDetalisBySerial(order);
-      setproductOrderToUpdate(order.products || []);
+      setProductOrderToUpdate(order.products || []);
       setaddition(order.addition || 0);
       setdiscount(order.discount || 0);
 
@@ -740,7 +740,7 @@ export const ManagementProvider = ({Children}) => {
 
       if (response.status === 200) {
         setorderDetalisBySerial({});
-        setproductOrderToUpdate([]);
+        setProductOrderToUpdate([]);
         setaddition(0);
         setdiscount(0);
         toast.success("تم تعديل الاوردر");

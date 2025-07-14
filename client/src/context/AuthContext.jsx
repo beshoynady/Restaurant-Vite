@@ -5,7 +5,6 @@ const AuthContext =createContext();
 export const useAuth = useContext(AuthContext);
 
 export const AuthProvider = ({Children})=>{
-const [isLogin, setisLogin] = useState(false);
 
   const [permissionsList, setPermissionsList] = useState([]);
   const [employeeLoginInfo, setEmployeeLoginInfo] = useState(null);

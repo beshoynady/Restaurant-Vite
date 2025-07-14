@@ -37,12 +37,12 @@ const MenuCard = () => {
         addItemToCart,
         deleteItemFromCart,
         incrementProductQuantity,
-        setproductExtras,
+        setProductExtras,
         decrementProductQuantity,
-        setproductNote,
+        setProductNote,
         addNoteToProduct,
-        addExtrasToProduct,
-        handleAddProductExtras,
+        applyExtrasToCartProduct,
+        toggleExtraSelectionForProduct,
         productExtras,
         itemId,
       }) => {
@@ -82,7 +82,7 @@ const MenuCard = () => {
                                 cols="100"
                                 rows="3"
                                 onChange={(e) => {
-                                  setproductNote(e.target.value);
+                                  setProductNote(e.target.value);
                                 }}
                                 className="w-100 h-100 my-1"
                                 style={{ zIndex: 11 }}
@@ -123,7 +123,7 @@ const MenuCard = () => {
                                 <form
                                   onSubmit={(e) => {
                                     if (product.extras.length > 0) {
-                                      addExtrasToProduct(
+                                      applyExtrasToCartProduct(
                                         e,
                                         product._id,
                                         sizeId
@@ -227,7 +227,7 @@ const MenuCard = () => {
                                                         ))
                                                   }
                                                   onChange={(e) =>
-                                                    handleAddProductExtras(
+                                                    toggleExtraSelectionForProduct(
                                                       extra,
                                                       ind
                                                     )
@@ -240,7 +240,7 @@ const MenuCard = () => {
                                                     fontWeight: "800",
                                                   }}
                                                   onClick={(e) =>
-                                                    handleAddProductExtras(
+                                                    toggleExtraSelectionForProduct(
                                                       extra,
                                                       ind
                                                     )
@@ -408,7 +408,7 @@ const MenuCard = () => {
                                       
                                       setproductId(product._id);
                                       setextraArea(!extraArea);
-                                      setproductExtras(
+                                      setProductExtras(
                                         product.sizes.find((size) => size._id === sizeId)?.extrasSelected || []
                                       );;
                                     }}
@@ -587,7 +587,7 @@ const MenuCard = () => {
                                 cols="100"
                                 rows="3"
                                 onChange={(e) => {
-                                  setproductNote(e.target.value);
+                                  setProductNote(e.target.value);
                                 }}
                                 className="w-100 h-100 my-1"
                                 style={{ zIndex: 11 }}
@@ -621,7 +621,7 @@ const MenuCard = () => {
                                 <form
                                   onSubmit={(e) => {
                                     if (product.extras.length > 0) {
-                                      addExtrasToProduct(
+                                      applyExtrasToCartProduct(
                                         e,
                                         product._id,
                                         sizeId
@@ -712,7 +712,7 @@ const MenuCard = () => {
                                                         ))
                                                     }
                                                     onChange={(e) =>
-                                                      handleAddProductExtras(
+                                                      toggleExtraSelectionForProduct(
                                                         extra,
                                                         ind
                                                       )
@@ -725,7 +725,7 @@ const MenuCard = () => {
                                                       fontWeight: "800",
                                                     }}
                                                     onClick={(e) =>
-                                                      handleAddProductExtras(
+                                                      toggleExtraSelectionForProduct(
                                                         extra,
                                                         ind
                                                       )
@@ -878,7 +878,7 @@ const MenuCard = () => {
                                       cursor: "pointer",
                                     }}
                                     onClick={() => {
-                                      setproductExtras(
+                                      setProductExtras(
                                         product.extrasSelected
                                           ? product.extrasSelected
                                           : []

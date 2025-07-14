@@ -124,7 +124,7 @@ const ProductionRecipe = () => {
     "takeaway",
     "delivery",
   ]);
-  const [itemId, setitemId] = useState("");
+  const [itemId, setItemsInCart] = useState("");
   const [name, setname] = useState("");
   const [unit, setunit] = useState("");
   const [wastePercentage, setwastePercentage] = useState(0);
@@ -208,7 +208,7 @@ const ProductionRecipe = () => {
             { productionRecipe },
             config
           );
-          setitemId("");
+          setItemsInCart("");
           setname("");
           setquantity("");
           setunit("");
@@ -514,7 +514,7 @@ const ProductionRecipe = () => {
   const handleSelectedStockItem = async (id) => {
     try {
       const config = await handleGetTokenAndConfig();
-      setitemId(id);
+      setItemsInCart(id);
       const getStockItem = await axios.get(
         `${apiUrl}/api/stockItem/${id}`,
         config
@@ -785,7 +785,7 @@ const ProductionRecipe = () => {
                           data-toggle="modal"
                           onClick={() => {
                             setrecipeid(ingredient._id);
-                            setitemId(ingredient.itemId);
+                            setItemsInCart(ingredient.itemId);
                             setname(ingredient.name);
                             setquantity(ingredient.quantity);
                             setunit(ingredient.unit);
@@ -806,7 +806,7 @@ const ProductionRecipe = () => {
                           className="btn btn-sm btn-danger"
                           data-toggle="modal"
                           onClick={() => {
-                            setitemId(ingredient.itemId);
+                            setItemsInCart(ingredient.itemId);
                           }}
                         >
                           <i
@@ -868,7 +868,7 @@ const ProductionRecipe = () => {
                           data-toggle="modal"
                           onClick={() => {
                             setrecipeid(dineIn._id);
-                            setitemId(dineIn.itemId);
+                            setItemsInCart(dineIn.itemId);
                             setname(dineIn.name);
                             setquantity(dineIn.quantity);
                             setunit(dineIn.unit);
@@ -889,7 +889,7 @@ const ProductionRecipe = () => {
                           className="btn btn-sm btn-danger"
                           data-toggle="modal"
                           onClick={() => {
-                            setitemId(dineIn.itemId);
+                            setItemsInCart(dineIn.itemId);
                           }}
                         >
                           <i
@@ -951,7 +951,7 @@ const ProductionRecipe = () => {
                           data-toggle="modal"
                           onClick={() => {
                             setrecipeid(takeaway._id);
-                            setitemId(takeaway.itemId);
+                            setItemsInCart(takeaway.itemId);
                             setname(takeaway.name);
                             setquantity(takeaway.quantity);
                             setunit(takeaway.unit);
@@ -972,7 +972,7 @@ const ProductionRecipe = () => {
                           className="btn btn-sm btn-danger"
                           data-toggle="modal"
                           onClick={() => {
-                            setitemId(takeaway.itemId);
+                            setItemsInCart(takeaway.itemId);
                           }}
                         >
                           <i
@@ -1034,7 +1034,7 @@ const ProductionRecipe = () => {
                           data-toggle="modal"
                           onClick={() => {
                             setrecipeid(delivery._id);
-                            setitemId(delivery.itemId);
+                            setItemsInCart(delivery.itemId);
                             setname(delivery.name);
                             setquantity(delivery.quantity);
                             setunit(delivery.unit);
@@ -1055,7 +1055,7 @@ const ProductionRecipe = () => {
                           className="btn btn-sm btn-danger"
                           data-toggle="modal"
                           onClick={() => {
-                            setitemId(delivery.itemId);
+                            setItemsInCart(delivery.itemId);
                           }}
                         >
                           <i
@@ -1329,7 +1329,7 @@ const ProductionRecipe = () => {
                   <select
                     className="form-control border-primary m-0 p-2 h-auto"
                     onChange={(e) => {
-                      setitemId(e.target.value);
+                      setItemsInCart(e.target.value);
                       const selectedItem = AllStockItems.find(
                         (s) => s._id === e.target.value
                       );

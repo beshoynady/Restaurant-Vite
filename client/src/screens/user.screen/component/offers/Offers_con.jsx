@@ -16,16 +16,16 @@ import 'swiper/css/effect-coverflow';
 
 const Offers = () => {
   const [offerproducts, setofferproducts] = useState(products)
-  const [count, setcount] = useState(0)
+  const [count, setCount] = useState(0)
 
   const incrementProductQuantity =(id) =>{ 
-    setcount(count + 1)
+    setCount(count + 1)
     offerproducts[id].count = offerproducts[id].count + 1;
     // setofferproducts(offerproducts[id].count + 1)
   };
 
   const decrementProductQuantity =(id) =>{
-    setcount(count -1)
+    setCount(count -1)
     offerproducts[id].count = offerproducts[id].count - 1;
     // setofferproducts(offerproducts[id].count -1)
 

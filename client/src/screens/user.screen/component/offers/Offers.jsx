@@ -20,16 +20,16 @@ export default function Offers() {
     allProducts,
     productsOffer,
     sizesOffer,
-    setproductExtras,
+    setProductExtras,
     productExtras,
-    handleAddProductExtras,
-    addExtrasToProduct,
+    toggleExtraSelectionForProduct,
+    applyExtrasToCartProduct,
     itemId,
     addItemToCart,
     deleteItemFromCart,
     incrementProductQuantity,
     decrementProductQuantity,
-    setproductNote,
+    setProductNote,
     addNoteToProduct,
     handleGetTokenAndConfig,
     apiUrl,
@@ -80,7 +80,7 @@ export default function Offers() {
                                     name="note"
                                     cols="100"
                                     rows="3"
-                                    onChange={(e) => { setproductNote(e.target.value) }}
+                                    onChange={(e) => { setProductNote(e.target.value) }}
                                     className="w-100 h-100 my-1"
                                     style={{ zIndex: 11 }}
                                   ></textarea>
@@ -144,7 +144,7 @@ export default function Offers() {
                               name="note"
                               cols="100"
                               rows="3"
-                              onChange={(e) => { setproductNote(e.target.value) }}
+                              onChange={(e) => { setProductNote(e.target.value) }}
                               className="w-100 h-100 my-1"
                               style={{ zIndex: 11 }}
                             ></textarea>
@@ -222,7 +222,7 @@ export default function Offers() {
                             cols="100"
                             rows="3"
                             onChange={(e) => {
-                              setproductNote(e.target.value);
+                              setProductNote(e.target.value);
                             }}
                             className="w-100 h-100 my-1 form-control"
                             style={{ zIndex: 11 }}
@@ -259,7 +259,7 @@ export default function Offers() {
                             <form
                               onSubmit={(e) => {
                                 if (product.extras.length > 0) {
-                                  addExtrasToProduct(e, product._id, size._id);
+                                  applyExtrasToCartProduct(e, product._id, size._id);
                                 }
                                 setSelectedButtonIndex(1);
                                 setextraArea(!extraArea);
@@ -344,7 +344,7 @@ export default function Offers() {
                                                     ))
                                               }
                                               onChange={(e) =>
-                                                handleAddProductExtras(
+                                                toggleExtraSelectionForProduct(
                                                   extra,
                                                   ind
                                                 )
@@ -357,7 +357,7 @@ export default function Offers() {
                                                 fontWeight: "900",
                                               }}
                                               onClick={(e) =>
-                                                handleAddProductExtras(
+                                                toggleExtraSelectionForProduct(
                                                   extra,
                                                   ind
                                                 )
@@ -453,7 +453,7 @@ export default function Offers() {
                                 cursor: "pointer",
                               }}
                               onClick={() => {
-                                setproductExtras(
+                                setProductExtras(
                                   product.extrasSelected
                                     ? product.extrasSelected
                                     : []
@@ -580,7 +580,7 @@ export default function Offers() {
                         cols="100"
                         rows="3"
                         onChange={(e) => {
-                          setproductNote(e.target.value);
+                          setProductNote(e.target.value);
                         }}
                         className="w-100 h-100 my-1 form-control"
                         style={{ zIndex: 11 }}
@@ -617,7 +617,7 @@ export default function Offers() {
                         <form
                           onSubmit={(e) => {
                             if (product.extras.length > 0) {
-                              addExtrasToProduct(e, product._id, "");
+                              applyExtrasToCartProduct(e, product._id, "");
                             }
                             setSelectedButtonIndex(1);
                             setextraArea(!extraArea);
@@ -683,7 +683,7 @@ export default function Offers() {
                                               ))
                                           }
                                           onChange={(e) =>
-                                            handleAddProductExtras(extra, ind)
+                                            toggleExtraSelectionForProduct(extra, ind)
                                           }
                                         />
                                         <label
@@ -693,7 +693,7 @@ export default function Offers() {
                                             fontWeight: "900",
                                           }}
                                           onClick={(e) =>
-                                            handleAddProductExtras(extra, ind)
+                                            toggleExtraSelectionForProduct(extra, ind)
                                           }
                                         >
                                           {`${extra.name} - ${extra.price} ج`}{" "}
@@ -780,7 +780,7 @@ export default function Offers() {
                             cursor: "pointer",
                           }}
                           onClick={() => {
-                            setproductExtras(
+                            setProductExtras(
                               product.extrasSelected
                                 ? product.extrasSelected
                                 : []

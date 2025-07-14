@@ -35,9 +35,9 @@ const POS = () => {
     deleteItemFromCart,
     incrementProductQuantity,
     decrementProductQuantity,
-    setproductNote,
+    setProductNote,
     addNoteToProduct,
-    setitemsInCart,
+    setItemsInCart,
     itemsInCart,
     costOrder,
     createWaiterOrderForTable,
@@ -55,10 +55,10 @@ const POS = () => {
     addition,
     getOrderProductForTable,
     itemId,
-    addExtrasToProduct,
-    handleAddProductExtras,
+    applyExtrasToCartProduct,
+    toggleExtraSelectionForProduct,
     productExtras,
-    setproductExtras,
+    setProductExtras,
     orderDetalisBySerial,
     getOrderDetailsBySerial,
     updateOrder,
@@ -78,7 +78,7 @@ const POS = () => {
   const [sizeId, setsizeId] = useState("");
 
   const [tableID, settableID] = useState("");
-  // const [itemId, setitemId] = useState([])
+  // const [itemId, setItemsInCart] = useState([])
   const [noteArea, setnoteArea] = useState(false);
   const [productId, setproductId] = useState("");
   const [areas, setAreas] = useState([]);
@@ -505,7 +505,7 @@ const POS = () => {
                         <form
                           onSubmit={(e) => {
                             if (product.extras.length > 0) {
-                              addExtrasToProduct(e, product._id, item.sizeId);
+                              applyExtrasToCartProduct(e, product._id, item.sizeId);
                             }
                             setSelectedButtonIndex(1);
                             setextraArea(!extraArea);
@@ -603,7 +603,7 @@ const POS = () => {
                                                 ))
                                           }
                                           onChange={(e) =>
-                                            handleAddProductExtras(extra, ind)
+                                            toggleExtraSelectionForProduct(extra, ind)
                                           }
                                         />
                                         <label
@@ -613,7 +613,7 @@ const POS = () => {
                                             fontWeight: "900",
                                           }}
                                           onClick={(e) =>
-                                            handleAddProductExtras(extra, ind)
+                                            toggleExtraSelectionForProduct(extra, ind)
                                           }
                                         >
                                           {extra.name} - {extra.price} ج
@@ -658,7 +658,7 @@ const POS = () => {
                         <form
                           onSubmit={(e) => {
                             if (product.extras.length > 0) {
-                              addExtrasToProduct(e, product._id, sizeId);
+                              applyExtrasToCartProduct(e, product._id, sizeId);
                             }
                             setSelectedButtonIndex(1);
                             setextraArea(!extraArea);
@@ -742,7 +742,7 @@ const POS = () => {
                                                 ))
                                             }
                                             onChange={(e) =>
-                                              handleAddProductExtras(extra, ind)
+                                              toggleExtraSelectionForProduct(extra, ind)
                                             }
                                           />
                                           <label
@@ -752,7 +752,7 @@ const POS = () => {
                                               fontWeight: "900",
                                             }}
                                             onClick={(e) =>
-                                              handleAddProductExtras(extra, ind)
+                                              toggleExtraSelectionForProduct(extra, ind)
                                             }
                                           >
                                             {`${extra.name} - ${extra.price} ج`}
@@ -810,7 +810,7 @@ const POS = () => {
                             placeholder="اضف تعليماتك الخاصة بهذا الطبق"
                             name="note"
                             onChange={(e) => {
-                              setproductNote(e.target.value);
+                              setProductNote(e.target.value);
                             }}
                           ></textarea>
 
@@ -853,7 +853,7 @@ const POS = () => {
                             placeholder="اضف تعليماتك الخاصة بهذا الطبق"
                             name="note"
                             onChange={(e) => {
-                              setproductNote(e.target.value);
+                              setProductNote(e.target.value);
                             }}
                           ></textarea>
 
@@ -869,7 +869,7 @@ const POS = () => {
                               className="btn btn-secondarycol-6 h-100 px-2 py-3 m-0 "
                               onClick={() => {
                                 setnoteArea(!noteArea);
-                                setproductNote("");
+                                setProductNote("");
                               }}
                             >
                               اغلاق
@@ -917,7 +917,7 @@ const POS = () => {
                               cursor: "pointer",
                             }}
                             onClick={() => {
-                              setproductExtras(item.extras);
+                              setProductExtras(item.extras);
                               setextraArea(!extraArea);
                               getProductDitalis(allProducts, item.productId);
                               item.sizeId
@@ -1032,7 +1032,7 @@ const POS = () => {
                           placeholder="اضف تعليماتك الخاصة بهذا الطبق"
                           name="note"
                           onChange={(e) => {
-                            setproductNote(e.target.value);
+                            setProductNote(e.target.value);
                           }}
                         ></textarea>
                         <div className="d-flex flex-nowrap align-aitems-center  justify-content-between w-100 h-25 p-0 m-0">
@@ -1381,7 +1381,7 @@ const POS = () => {
               style={{ height: "60px" }}
               className="col-3 d-flex align-items-center justify-content-center text-nowrap btn btn-danger"
               onClick={() => {
-                setitemsInCart([]);
+                setItemsInCart([]);
                 deleteOrderdetalis();
               }}
             >
