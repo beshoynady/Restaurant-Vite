@@ -86,20 +86,7 @@ export const ManagementProvider = ({Children}) => {
         return filtered;
       };
 
-   const handleGetTokenAndConfig = async () => {
-      await verifyToken();
-      const token = localStorage.getItem("token_e");
-      if (!token) {
-        toast.error("!رجاء تسجيل الدخول مره اخري");
-        return null;
-      }
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      return config;
-    };
+
 
   const createSerial = () => {
     const serial =
@@ -132,37 +119,6 @@ export const ManagementProvider = ({Children}) => {
         }
       };
     
-      //+++++++++++ table ++++++++++++++
-      const [allTable, setAllTable] = useState([]);
-    
-      const getAllTable = async () => {
-        try {
-          const response = await axios.get(apiUrl + "/api/table");
-    
-          if (response.status === 200) {
-            const tables = response.data.allTables || [];
-    
-            if (tables.length === 0) {
-              console.warn(
-                "No tables found. The restaurant may be new or data is missing."
-              );
-              toast.warn(
-                "No tables found. The restaurant may be new or data is missing."
-              );
-            }
-    
-            setAllTable(tables);
-            console.log("Tables retrieved successfully:", tables);
-          } else {
-            console.error("Unexpected response status:", response.status);
-          }
-        } catch (error) {
-          console.error(
-            "Error getting all tables:",
-            error?.response?.data?.message || error.message
-          );
-        }
-      };
     
       // +++++++++++++++ user +++++++++++++
       const [allUsers, setAllUsers] = useState([]);

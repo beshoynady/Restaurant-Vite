@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import "../orders/Orders.css";
 
 const Users = () => {
- 
+
 
   const {
     setStartDate,
@@ -23,9 +23,9 @@ const Users = () => {
     endPagination,
     setStartPagination,
     setEndPagination,
-  apiUrl,
-handleGetTokenAndConfig,
-} = useContext(dataContext);
+    apiUrl,
+    handleGetTokenAndConfig,
+  } = useContext(dataContext);
 
   const permissionUser = permissionsList?.filter(
     (permission) => permission.resource === "Users"
@@ -385,8 +385,8 @@ handleGetTokenAndConfig,
                         </td>
                         <td>{formatDateTime(user.createdAt)}</td>
                         <td>
-                           <button
-data-target="#edituserModal"
+                          <button
+                            data-target="#edituserModal"
                             className="btn btn-sm btn-primary ml-2 "
                             data-toggle="modal"
                           >
@@ -399,10 +399,10 @@ data-target="#edituserModal"
                               }}
                             >
                               &#xE254;
-                                </i>
-                              </button>
-                           <button
-data-target="#deleteuserModal"
+                            </i>
+                          </button>
+                          <button
+                            data-target="#deleteuserModal"
                             className="btn btn-sm btn-danger"
                             data-toggle="modal"
                           >
@@ -410,11 +410,11 @@ data-target="#deleteuserModal"
                               className="material-icons"
                               data-toggle="tooltip"
                               title="Delete"
-                              //    onClick={() => setuserloyeeid(user._id)}
+                            //    onClick={() => setuserloyeeid(user._id)}
                             >
                               &#xE872;
-                                </i>
-                              </button>
+                            </i>
+                          </button>
                         </td>
                       </tr>
                     );

@@ -1,17 +1,23 @@
+// Context for sharing common restaurant-wide data and utilities
+
 import React, { useState, useEffect, useMemo, createContext, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useAuth } from "./AuthContext";
 
 const SharedContext = createContext();
 export const useShared = () => useContext(SharedContext);
 
 export const SharedProvider = ({ children }) => {
   const apiUrl = import.meta.env.VITE_API_URL;
+  const { handleGetTokenAndConfig } = useAuth();
 
-  const [isRefresh, setIsRefresh] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // ------------------- Global UI State -------------------
+  const [isRefresh, setIsRefresh] = useState(false); // trigger for refreshing content
+  const [isLoading, setIsLoading] = useState(true);   // global loading indicator
+  const [isDarkMode, setIsDarkMode] = useState(false); // dark mode toggle
 
+  // ------------------- Time/Date Formatters -------------------
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -36,7 +42,9 @@ export const SharedProvider = ({ children }) => {
     return `${formattedDate} ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")} ${ampm}`;
   };
 
+  // ------------------- Restaurant Info -------------------
   const [restaurantData, setRestaurantData] = useState({});
+
   const getRestaurant = async () => {
     try {
       const config = await handleGetTokenAndConfig();
@@ -58,6 +66,7 @@ export const SharedProvider = ({ children }) => {
     }
   };
 
+  // ------------------- Products & Offers -------------------
   const [allProducts, setAllProducts] = useState([]);
   const [productsOffer, setProductsOffer] = useState([]);
   const [sizesOffer, setSizesOffer] = useState([]);
@@ -76,9 +85,7 @@ export const SharedProvider = ({ children }) => {
       productsList.forEach((pro) => {
         if (pro.hasSizes) {
           pro.sizes.forEach((size) => {
-            if (size.sizeDiscount > 0) {
-              sizeOffers.push(size);
-            }
+            if (size.sizeDiscount > 0) sizeOffers.push(size);
           });
         }
       });
@@ -88,6 +95,7 @@ export const SharedProvider = ({ children }) => {
     }
   };
 
+  // ------------------- Menu Categories -------------------
   const [allMenuCategories, setAllMenuCategories] = useState([]);
   const [menuCategoryId, setMenuCategoryId] = useState("");
 
@@ -107,20 +115,37 @@ export const SharedProvider = ({ children }) => {
     }
   };
 
+  // ------------------- Tables & Reservations -------------------
+  const [allTable, setAllTable] = useState([]);
   const [allReservations, setAllReservations] = useState([]);
+  const [availableTableIds, setAvailableTableIds] = useState([]);
+
+  const getAllTable = async () => {
+    try {
+      const response = await axios.get(apiUrl + "/api/table");
+      if (response.status === 200) {
+        const tables = response.data.allTables || [];
+        if (tables.length === 0) {
+          toast.warn("لا توجد طاولات مسجلة حالياً.");
+        }
+        setAllTable(tables);
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error getting all tables:", error);
+    }
+  };
+
   const getAllReservations = async () => {
     try {
       const config = await handleGetTokenAndConfig();
       const response = await axios.get(`${apiUrl}/api/reservation`, config);
-      if (response.data) {
-        setAllReservations(response.data);
-      }
+      if (response.data) setAllReservations(response.data);
     } catch (error) {
       console.error("Error fetching reservations:", error);
     }
   };
-
-  const [availableTableIds, setAvailableTableIds] = useState([]);
 
   const getAvailableTables = (reservationDate, startTime, endTime) => {
     const filteredByDate = allReservations.filter((res) => {
@@ -131,12 +156,10 @@ export const SharedProvider = ({ children }) => {
 
     const overlapping = filteredByDate.filter((res) => {
       if (["canceled", "Missed reservation time"].includes(res.status)) return false;
-
       const startRes = new Date(res.startTime).getTime();
       const endRes = new Date(res.endTime).getTime();
       const startSel = new Date(startTime).getTime();
       const endSel = new Date(endTime).getTime();
-
       return (
         (startRes <= startSel && endRes >= startSel) ||
         (startRes <= endSel && endRes >= endSel) ||
@@ -157,8 +180,8 @@ export const SharedProvider = ({ children }) => {
     tableNumber,
     userId,
     numberOfGuests,
-    customerName,
-    customerPhone,
+    clientName,
+    clientPhone,
     reservationDate,
     startTime,
     endTime,
@@ -176,18 +199,15 @@ export const SharedProvider = ({ children }) => {
             new Date(res.endTime).getTime() >= new Date(startTime).getTime()) ||
           (new Date(res.startTime).getTime() <= new Date(endTime).getTime() &&
             new Date(res.endTime).getTime() >= new Date(endTime).getTime());
-
         return sameTable && sameDate && overlap;
       });
-
       if (conflict) return toast.error("هذه الطاولة محجوزة في هذا الوقت");
-
       const response = await axios.post(`${apiUrl}/api/reservation`, {
         tableId,
         tableNumber,
         numberOfGuests,
-        customerName,
-        customerPhone,
+        clientName,
+        clientPhone,
         reservationDate,
         startTime,
         endTime,
@@ -195,7 +215,6 @@ export const SharedProvider = ({ children }) => {
         createdBy: createdBy || null,
         reservationNote: reservationNote || "",
       });
-
       if (response.status === 201) {
         getAllReservations();
         toast.success("تم الحجز بنجاح");
@@ -203,7 +222,6 @@ export const SharedProvider = ({ children }) => {
         toast.error("حدث خطأ أثناء الحجز");
       }
     } catch (error) {
-      // Display error message if an error occurred
       console.error(error);
       toast.error("فشل الحجز! حاول مرة أخرى.");
     } finally {
@@ -211,10 +229,8 @@ export const SharedProvider = ({ children }) => {
     }
   };
 
-
-
+  // ------------------- Dark Mode Toggle -------------------
   useEffect(() => {
-    // Toggle dark mode styles
     const body = document.body;
     if (isDarkMode) {
       body.classList.add("dark-mode");
@@ -227,53 +243,58 @@ export const SharedProvider = ({ children }) => {
     setIsDarkMode(!isDarkMode);
   };
 
-
-  const sharedValue = useMemo(() => ({
-    apiUrl,
-    isRefresh,
-    setIsRefresh,
-    isLoading,
-    setIsLoading,
-    isDarkMode,
-    setIsDarkMode,
-    formatDate,
-    formatTime,
-    formatDateTime,
-    toggleDarkMode,
-    restaurantData,
-    getRestaurant,
-    allProducts,
-    setAllProducts,
-    getAllProducts,
-    productsOffer,
-    sizesOffer,
-    allMenuCategories,
-    getAllMenuCategories,
-    menuCategoryId,
-    setMenuCategoryId,
-    allReservations,
-    getAllReservations,
-    availableTableIds,
-    getAvailableTables,
-    createReservations,
-  }), [
-    apiUrl,
-    isRefresh,
-    isLoading,
-    isDarkMode,
-    restaurantData,
-    allProducts,
-    productsOffer,
-    sizesOffer,
-    allMenuCategories,
-    menuCategoryId,
-    allReservations,
-    availableTableIds,
-  ]);
-
-  return (
-    <SharedContext.Provider value={sharedValue}>
-      {children}
-    </SharedContext.Provider>
+  // ------------------- Context Value -------------------
+  const sharedValue = useMemo(
+    () => ({
+      apiUrl,
+      isRefresh,
+      setIsRefresh,
+      isLoading,
+      setIsLoading,
+      isDarkMode,
+      setIsDarkMode,
+      formatDate,
+      formatTime,
+      formatDateTime,
+      toggleDarkMode,
+      restaurantData,
+      getRestaurant,
+      allProducts,
+      setAllProducts,
+      getAllProducts,
+      productsOffer,
+      sizesOffer,
+      allMenuCategories,
+      getAllMenuCategories,
+      menuCategoryId,
+      setMenuCategoryId,
+      allReservations,
+      getAllReservations,
+      availableTableIds,
+      getAvailableTables,
+      createReservations,
+      allTable,
+      getAllTable,
+    }),
+    [
+      apiUrl,
+      isRefresh,
+      isLoading,
+      isDarkMode,
+      restaurantData,
+      allProducts,
+      productsOffer,
+      sizesOffer,
+      allMenuCategories,
+      menuCategoryId,
+      allReservations,
+      availableTableIds,
+      allTable,
+    ]
   );
+
+  return 
+  <SharedContext.Provider value={sharedValue}>
+    {children}
+  </SharedContext.Provider>;
 };

@@ -4,7 +4,7 @@ import { dataContext } from "../../../../App";
 import { toast } from "react-toastify";
 import "../orders/Orders.css";
 
-const CustomerMessage = () => {
+const ClientMessage = () => {
   const {
     setStartDate,
     setEndDate,
@@ -34,9 +34,9 @@ const CustomerMessage = () => {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [messageId, setmessageId] = useState("");
-  const [allCustomerMessage, setAllCustomerMessage] = useState([]);
+  const [allClientMessage, setAllClientMessage] = useState([]);
 
-  const getAllCustomerMessage = async () => {
+  const getAllClientMessage = async () => {
     if (permissionUserMassage && !permissionUserMassage.read) {
       toast.warn("ليس لك صلاحية لعرض رسائل المستخدمين");
       return;
@@ -44,7 +44,7 @@ const CustomerMessage = () => {
     try {
       const config = await handleGetTokenAndConfig();
       const response = await axios.get(`${apiUrl}/api/message`, config);
-      setAllCustomerMessage(response.data);
+      setAllClientMessage(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -69,13 +69,13 @@ const CustomerMessage = () => {
         { isSeen: true },
         config
       );
-      getAllCustomerMessage();
+      getAllClientMessage();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const deleteCustomerMessage = async (e) => {
+  const deleteClientMessage = async (e) => {
     e.preventDefault();
     const config = await handleGetTokenAndConfig();
     if (permissionUserMassage && !permissionUserMassage.delete) {
@@ -90,21 +90,21 @@ const CustomerMessage = () => {
       if (response) {
         toast.success("تم حذف الرسالة بنجاح");
       }
-      getAllCustomerMessage();
+      getAllClientMessage();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getCustomerMessageByPhone = async (phone) => {
+  const getClientMessageByPhone = async (phone) => {
     if (!phone) {
-      getAllCustomerMessage();
+      getAllClientMessage();
       return;
     }
-    const message = allCustomerMessage.filter((message) =>
+    const message = allClientMessage.filter((message) =>
       message.phone.startsWith(phone)
     );
-    setAllCustomerMessage(message);
+    setAllClientMessage(message);
   };
 
   const [selectedIds, setSelectedIds] = useState([]);
@@ -133,7 +133,7 @@ const CustomerMessage = () => {
       for (const Id of selectedIds) {
         await axios.delete(`${apiUrl}/api/message/${Id}`, config);
       }
-      getAllCustomerMessage();
+      getAllClientMessage();
       toast.success("تم حذف الرسائل المحدده");
       setSelectedIds([]);
     } catch (error) {
@@ -143,7 +143,7 @@ const CustomerMessage = () => {
   };
 
   useEffect(() => {
-    getAllCustomerMessage();
+    getAllClientMessage();
   }, []);
 
   return (
@@ -203,7 +203,7 @@ const CustomerMessage = () => {
                 <input
                   type="text"
                   class="form-control border-primary m-0 p-2 h-auto"
-                  onChange={(e) => getCustomerMessageByPhone(e.target.value)}
+                  onChange={(e) => getClientMessageByPhone(e.target.value)}
                 />
               </div>
               <div className="col-12 text-dark d-flex flex-wrap align-items-center justify-content-start p-0 m-0 mt-3">
@@ -214,8 +214,8 @@ const CustomerMessage = () => {
                   <select
                     className="form-control border-primary m-0 p-2 h-auto"
                     onChange={(e) =>
-                      setAllCustomerMessage(
-                        filterByTime(e.target.value, allCustomerMessage)
+                      setAllClientMessage(
+                        filterByTime(e.target.value, allClientMessage)
                       )
                     }
                   >
@@ -261,8 +261,8 @@ const CustomerMessage = () => {
                       type="button"
                       className="btn btn-primary h-100 p-2 "
                       onClick={() =>
-                        setAllCustomerMessage(
-                          filterByDateRange(allCustomerMessage)
+                        setAllClientMessage(
+                          filterByDateRange(allClientMessage)
                         )
                       }
                     >
@@ -271,7 +271,7 @@ const CustomerMessage = () => {
                     <button
                       type="button"
                       className="btn btn-warning h-100 p-2"
-                      onClick={getAllCustomerMessage}
+                      onClick={getAllClientMessage}
                     >
                       استعادة
                     </button>
@@ -304,7 +304,7 @@ const CustomerMessage = () => {
               </tr>
             </thead>
             <tbody>
-              {allCustomerMessage.map((message, i) => {
+              {allClientMessage.map((message, i) => {
                 if ((i >= startPagination) & (i < endPagination)) {
                   return (
                     <tr key={i}>
@@ -370,11 +370,11 @@ const CustomerMessage = () => {
             <div className="hint-text text-dark">
               عرض{" "}
               <b>
-                {allCustomerMessage.length > endPagination
+                {allClientMessage.length > endPagination
                   ? endPagination
-                  : allCustomerMessage.length}
+                  : allClientMessage.length}
               </b>{" "}
-              من <b>{allCustomerMessage.length}</b> عنصر
+              من <b>{allClientMessage.length}</b> عنصر
             </div>
             <ul className="pagination">
               <li onClick={EditPagination} className="page-item disabled">
@@ -519,7 +519,7 @@ const CustomerMessage = () => {
       <div id="deletemessageModal" className="modal fade">
         <div className="modal-dialog modal-lg">
           <div className="modal-content shadow-lg border-0 rounded ">
-            <form onSubmit={deleteCustomerMessage}>
+            <form onSubmit={deleteClientMessage}>
               <div className="modal-header d-flex flex-wrap align-items-center text-light bg-primary">
                 <h4 className="modal-title">حذف رساله</h4>
                 <button
@@ -601,4 +601,4 @@ const CustomerMessage = () => {
   );
 };
 
-export default CustomerMessage;
+export default ClientMessage;

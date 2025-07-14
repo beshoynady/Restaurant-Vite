@@ -133,13 +133,13 @@ const CashMovement = React.lazy(() =>
   import("./screens/management/manag.component/cash/CashMovement")
 );
 const Users = React.lazy(() =>
-  import("./screens/management/manag.component/users/Users")
+  import("./screens/management/manag.component/clients/Users.jsx")
 );
-const Customers = React.lazy(() =>
-  import("./screens/management/manag.component/users/Customers")
+const Clients = React.lazy(() =>
+  import("./screens/management/manag.component/clients/Clients.jsx")
 );
-const CustomerMessage = React.lazy(() =>
-  import("./screens/management/manag.component/users/CustomerMessage")
+const ClientMessage = React.lazy(() =>
+  import("./screens/management/manag.component/clients/ClientMessage.jsx")
 );
 const ProfitLoss = React.lazy(() =>
   import("./screens/management/manag.component/reports/ProfitAndLoss.jsx")
@@ -2162,8 +2162,8 @@ const apiUrl = import.meta.env.VITE_API_URL;
     tableNumber,
     userId,
     numberOfGuests,
-    customerName,
-    customerPhone,
+    clientName,
+    clientPhone,
     reservationDate,
     startTime,
     endTime,
@@ -2175,7 +2175,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
       // setIsLoading(true)
 
       // Logging input data for debugging purposes
-      // console.log({ tableId, tableNumber, userId, numberOfGuests, customerName, customerPhone, reservationDate, startTime, endTime, reservationNote, createdBy });
+      // console.log({ tableId, tableNumber, userId, numberOfGuests, clientName, clientPhone, reservationDate, startTime, endTime, reservationNote, createdBy });
 
       // Convert reservationDate to Date object
       const selectedDate = new Date(reservationDate);
@@ -2234,8 +2234,8 @@ const apiUrl = import.meta.env.VITE_API_URL;
         tableId,
         tableNumber,
         numberOfGuests,
-        customerName,
-        customerPhone,
+        clientName,
+        clientPhone,
         reservationDate,
         startTime,
         endTime,
@@ -2841,10 +2841,10 @@ const apiUrl = import.meta.env.VITE_API_URL;
               }
             />
             <Route
-              path="customers"
+              path="clients"
               element={
                 <Suspense fallback={<LoadingPage />}>
-                  <Customers />
+                  <Clients />
                 </Suspense>
               }
             />
@@ -2852,7 +2852,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
               path="message"
               element={
                 <Suspense fallback={<LoadingPage />}>
-                  <CustomerMessage />
+                  <ClientMessage />
                 </Suspense>
               }
             />

@@ -104,7 +104,7 @@ const POS = () => {
     setadddiscount(false);
   };
 
-  const handelcustomerDeliveryArea = (area) => {
+  const handelclientDeliveryArea = (area) => {
     const deliveryArea = JSON.parse(area);
     // console.log({deliveryArea})
     setdeliveryAreaId(deliveryArea._id);
@@ -138,9 +138,9 @@ const POS = () => {
   };
 
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(1);
-  const [customerId, setcustomerId] = useState("");
+  const [clientId, setclientId] = useState("");
 
-  const getCustomerByPhone = async (phone) => {
+  const getClientByPhone = async (phone) => {
     if (!phone) {
       toast.error("ادخل رقم الموبايل");
       return;
@@ -151,23 +151,23 @@ const POS = () => {
     try {
       const config = await handleGetTokenAndConfig();
       const response = await axios.get(
-        `${apiUrl}/api/customer/phone/${phone}`,
+        `${apiUrl}/api/client/phone/${phone}`,
         config
       );
 
-      const customer = response.data;
+      const client = response.data;
 
-      if (customer) {
+      if (client) {
         setisClientFounded(true);
-        setcustomerId(customer._id);
-        setclientname(customer.name);
-        setclientaddress(customer.address);
-        setclientphone(customer.phone);
-        setdeliveryFee(customer.deliveryArea?.delivery_fee);
-        setdeliveryAreaName(customer.deliveryArea?.name);
-        setclientNotes(customer.notes);
-        setisVarified(customer.isVarified);
-        setrefusesOrders(customer.refusesOrders);
+        setclientId(client._id);
+        setclientname(client.name);
+        setclientaddress(client.address);
+        setclientphone(client.phone);
+        setdeliveryFee(client.deliveryArea?.delivery_fee);
+        setdeliveryAreaName(client.deliveryArea?.name);
+        setclientNotes(client.notes);
+        setisVarified(client.isVarified);
+        setrefusesOrders(client.refusesOrders);
         toast.success("تم تحديث بيانات العميل بنجاح.");
       } else {
         setisClientFounded(false);
@@ -177,18 +177,18 @@ const POS = () => {
       if (
         error.response &&
         error.response.data &&
-        error.response.data.message === "Customer not found"
+        error.response.data.message === "Client not found"
       ) {
         console.info(error);
         toast.info("هذا العميل ليس له بيانات.");
       } else {
-        console.error("Error updating customer:", error);
+        console.error("Error updating client:", error);
         toast.error("حدث خطأ أثناء جلب بيانات العميل.");
       }
     }
   };
 
-  const createCustomer = async (e) => {
+  const createClient = async (e) => {
     e.preventDefault();
 
     try {
@@ -198,7 +198,7 @@ const POS = () => {
       }
       // console.log({clientname, clientphone, deliveryAreaId, clientaddress})
       const response = await axios.post(
-        `${apiUrl}/api/customer`,
+        `${apiUrl}/api/client`,
         {
           name: clientname,
           phone: clientphone,
@@ -212,18 +212,18 @@ const POS = () => {
       );
       toast.success("تم حفظ بيانات العميل بنجاح.");
     } catch (error) {
-      console.error("Error creating customer:", error);
+      console.error("Error creating client:", error);
       toast.error("حدث خطأ أثناء حفظ بيانات العميل.");
     }
   };
 
-  const updateCustomer = async (e) => {
+  const updateClient = async (e) => {
     e.preventDefault();
     try {
       const config = await handleGetTokenAndConfig();
 
       const response = await axios.put(
-        `${apiUrl}/api/customer/${customerId}`,
+        `${apiUrl}/api/client/${clientId}`,
         {
           name: clientname,
           phone: clientphone,
@@ -237,7 +237,7 @@ const POS = () => {
       );
       toast.success("تم تحديث بيانات العميل بنجاح.");
     } catch (error) {
-      console.error("Error updating customer:", error);
+      console.error("Error updating client:", error);
       toast.error("حدث خطأ أثناء تحديث بيانات العميل.");
     }
   };
@@ -1861,7 +1861,7 @@ const POS = () => {
                         required
                         onChange={(e) => {
                           setclientphone(e.target.value);
-                          getCustomerByPhone(e.target.value);
+                          getClientByPhone(e.target.value);
                         }}
                       />
                     </div>
@@ -1890,7 +1890,7 @@ const POS = () => {
                         className="form-control border-primary m-0 p-2 h-auto"
                         required
                         onChange={(e) => {
-                          handelcustomerDeliveryArea(e.target.value);
+                          handelclientDeliveryArea(e.target.value);
                         }}
                       >
                         <option>{deliveryAreaName}</option>
@@ -1978,8 +1978,8 @@ const POS = () => {
                       <button
                         type="button"
                         className="h-100 btn btn-success col-12 col-md-6"
-                        id="customerInfo"
-                        onClick={createCustomer}
+                        id="clientInfo"
+                        onClick={createClient}
                       >
                         {" "}
                         حفظ بيانات العميل{" "}
@@ -1988,8 +1988,8 @@ const POS = () => {
                       <button
                         type="button"
                         className="h-100 btn btn-success col-12 col-md-6"
-                        id="customerInfo"
-                        onClick={updateCustomer}
+                        id="clientInfo"
+                        onClick={updateClient}
                       >
                         {" "}
                         تعديل بيانات العميل{" "}

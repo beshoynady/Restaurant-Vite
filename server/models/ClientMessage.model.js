@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const customerMessageSchema = new mongoose.Schema({
+const clientMessageSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
@@ -24,6 +24,6 @@ const customerMessageSchema = new mongoose.Schema({
 },
 {timestamps : true});
 
-const CustomerMessageModel = mongoose.model('CustomerMessage', customerMessageSchema);
+const ClientMessageModel = mongoose.model('ClientMessage', clientMessageSchema);
 
-module.exports = CustomerMessageModel;
+module.exports = ClientMessageModel;

@@ -20,13 +20,13 @@ const ReservationSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'User',
         },
-        // Customer name for the reservation
-        customerName: {
+        // Client name for the reservation
+        clientName: {
             type: String,
             required: true,
         },
-        // Customer phone number for the reservation
-        customerPhone: {
+        // Client phone number for the reservation
+        clientPhone: {
             type: String, 
             required: true,
         },

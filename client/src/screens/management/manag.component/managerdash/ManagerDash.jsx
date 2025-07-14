@@ -1669,10 +1669,10 @@ const ManagerDash = () => {
                   </p>
                 </div>
 
-                {/* Customer Information */}
+                {/* Client Information */}
                 {orderType === "Delivery" ? (
                   <div
-                    className="customer-info text-dark"
+                    className="client-info text-dark"
                     style={{ margin: "20px" }}
                   >
                     <h4>بيانات العميل</h4>
@@ -1683,7 +1683,7 @@ const ManagerDash = () => {
                   </div>
                 ) : orderType === "Takeaway" ? (
                   <div
-                    className="customer-info text-dark"
+                    className="client-info text-dark"
                     style={{ marginBottom: "20px" }}
                   >
                     <h4>بيانات العميل</h4>

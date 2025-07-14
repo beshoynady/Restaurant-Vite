@@ -285,22 +285,22 @@ const OrderSchema = new mongoose.Schema(
       ref: "Employee",
       default: null,
     },
-    // Customer (User) associated with the order
+    // Client (User) associated with the order
     user: {
       type: ObjectId,
       ref: "User",
       default: null,
     },
-    // Customer name
+    // Client name
     name: {
       type: String,
     },
-    // Customer address
+    // Client address
     address: {
       type: String,
       default: null,
     },
-    // Customer phone number
+    // Client phone number
     phone: {
       type: String,
       default: null,

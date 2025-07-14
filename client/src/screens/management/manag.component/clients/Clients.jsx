@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { dataContext } from "../../../../App";
 import "../orders/Orders.css";
 
-const Customers = () => {
+const Clients = () => {
   const {
     setStartDate,
     setEndDate,
@@ -25,13 +25,13 @@ const Customers = () => {
     handleGetTokenAndConfig,
   } = useContext(dataContext);
 
-  const permissionCustomer = permissionsList?.filter(
-    (permission) => permission.resource === "Customers"
+  const permissionClient = permissionsList?.filter(
+    (permission) => permission.resource === "Clients"
   )[0];
 
-  const [allCustomers, setAllCustomers] = useState([]);
-  const [customerId, setcustomerId] = useState("");
-  const [customerData, setCustomerData] = useState({
+  const [allClients, setAllClients] = useState([]);
+  const [clientId, setclientId] = useState("");
+  const [clientData, setClientData] = useState({
     name: "",
     phone: "",
     deliveryArea: "",
@@ -42,20 +42,20 @@ const Customers = () => {
   });
 
   useEffect(() => {
-    getAllCustomers();
+    getAllClients();
   }, []);
 
-  const getAllCustomers = async () => {
+  const getAllClients = async () => {
     // setIsLoading(true);
     try {
       const config = await handleGetTokenAndConfig();
 
-      const response = await axios.get(`${apiUrl}/api/customer`, config);
-      console.log({ AllCustomers: response });
+      const response = await axios.get(`${apiUrl}/api/client`, config);
+      console.log({ AllClients: response });
       const data = await response.data;
-      setAllCustomers(data);
+      setAllClients(data);
     } catch (error) {
-      console.error("Error fetching customers:", error);
+      console.error("Error fetching clients:", error);
       toast.error("حدث خطأ أثناء جلب العملاء.");
     } finally {
       // setIsLoading(false);
@@ -64,82 +64,82 @@ const Customers = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCustomerData({ ...customerData, [name]: value });
+    setClientData({ ...clientData, [name]: value });
   };
 
-  const createCustomer = async (e) => {
+  const createClient = async (e) => {
     e.preventDefault();
     try {
       const config = await handleGetTokenAndConfig();
 
       if (
-        !customerData.name &&
-        !customerData.phone &&
-        !customerData.deliveryArea &&
-        !customerData.address
+        !clientData.name &&
+        !clientData.phone &&
+        !clientData.deliveryArea &&
+        !clientData.address
       ) {
         toast.warn("تاكد من الاسم و الموبايل و منطقه التوصل و العنوان ");
       }
       const response = await axios.post(
-        `${apiUrl}/api/customer`,
-        customerData,
+        `${apiUrl}/api/client`,
+        clientData,
         config
       );
-      console.log({ customerData, response });
-      getAllCustomers();
+      console.log({ clientData, response });
+      getAllClients();
       toast.success("تم إنشاء العميل بنجاح.");
     } catch (error) {
-      console.error("Error creating customer:", error);
+      console.error("Error creating client:", error);
       toast.error("حدث خطأ أثناء إنشاء العميل.");
     }
   };
 
-  const handelEditcustomer = (customer) => {
-    setCustomerData({
-      name: customer.name,
-      phone: customer.phone,
-      deliveryArea: customer.deliveryArea ? customer.deliveryArea._id : "",
-      addresses: customer.addresses,
-      notes: customer.notes,
-      isVarified: customer.isVarified,
-      refusesOrders: customer.refusesOrders,
+  const handelEditclient = (client) => {
+    setClientData({
+      name: client.name,
+      phone: client.phone,
+      deliveryArea: client.deliveryArea ? client.deliveryArea._id : "",
+      addresses: client.addresses,
+      notes: client.notes,
+      isVarified: client.isVarified,
+      refusesOrders: client.refusesOrders,
     });
   };
 
-  const updateCustomer = async (e) => {
+  const updateClient = async (e) => {
     e.preventDefault();
     try {
       const config = await handleGetTokenAndConfig();
 
       const response = await axios.put(
-        `${apiUrl}/api/customer/${customerId}`,
-        customerData,
+        `${apiUrl}/api/client/${clientId}`,
+        clientData,
         config
       );
-      getAllCustomers();
+      getAllClients();
       toast.success("تم تحديث العميل بنجاح.");
     } catch (error) {
-      console.error("Error updating customer:", error);
+      console.error("Error updating client:", error);
       toast.error("حدث خطأ أثناء تحديث العميل.");
     }
   };
 
-  const deleteCustomer = async (id) => {
+  const deleteClient = async (id) => {
     try {
       const config = await handleGetTokenAndConfig();
 
-      await axios.delete(`${apiUrl}/api/customer/${customerId}`, config);
-      getAllCustomers();
+      await axios.delete(`${apiUrl}/api/client/${clientId}`, config);
+      getAllClients();
       toast.success("تم حذف العميل بنجاح.");
     } catch (error) {
-      console.error("Error deleting customer:", error);
+      console.error("Error deleting client:", error);
       toast.error("حدث خطأ أثناء حذف العميل.");
     }
   };
 
-  const getCustomerByPhone = async (phone) => {
+  const getClientByPhone = async (phone) => {
     if (!phone) {
-      getAllCustomers();
+      getAllClients();
       return;
     }
     if (phone.length < 11) {
@@ -150,15 +150,15 @@ const Customers = () => {
       const config = await handleGetTokenAndConfig();
 
       const response = await axios.get(
-        `${apiUrl}/api/customer/phone/${phone}`,
+        `${apiUrl}/api/client/phone/${phone}`,
         config
       );
       const data = response.data;
       if (data) {
-        setCustomerData(data);
+        setClientData(data);
         toast.success("تم تحديث العميل بنجاح.");
       } else {
-        setCustomerData({
+        setClientData({
           name: "",
           phone: "",
           deliveryArea: "",
@@ -169,11 +169,11 @@ const Customers = () => {
         });
       }
     } catch (error) {
-      if (error.message === "Customer not found") {
+      if (error.message === "Client not found") {
         console.info(error);
         toast.info("هذا العميل ليس له بيانات.");
       } else {
-        console.error("Error updating customer:", error);
+        console.error("Error updating client:", error);
         toast.error("حدث خطأ أثناء جلب بيانات العميل.");
       }
     }
@@ -199,7 +199,7 @@ const Customers = () => {
   };
 
   useEffect(() => {
-    getAllCustomers();
+    getAllClients();
     getAllDeliveryAreas();
   }, []);
 
@@ -216,14 +216,14 @@ const Customers = () => {
               </div>
               <div className="col-12 col-md-6 p-0 m-0 d-flex flex-wrap aliegn-items-center justify-content-end print-hide">
                 <a
-                  href="#addcustomerModal"
+                  href="#addclientModal"
                   className="d-flex align-items-center justify-content-center h-100 m-0 btn btn-success"
                   data-toggle="modal"
                 >
                   {" "}
                   <span>اضافة موظف جديد</span>
                 </a>
-                {/* <a href="#deletecustomerModal" className="d-flex align-items-center justify-content-center h-100 m-0 btn btn-danger" data-toggle="modal"> <span>حذف الكل</span></a> */}
+                {/* <a href="#deleteclientModal" className="d-flex align-items-center justify-content-center h-100 m-0 btn btn-danger" data-toggle="modal"> <span>حذف الكل</span></a> */}
               </div>
             </div>
           </div>
@@ -260,7 +260,7 @@ const Customers = () => {
                 <input
                   type="text"
                   className="form-control border-primary m-0 p-2 h-auto"
-                  onChange={(e) => getCustomerByPhone(e.target.value)}
+                  onChange={(e) => getClientByPhone(e.target.value)}
                 />
               </div>
               <div className="col-12 text-dark d-flex flex-wrap align-items-center justify-content-start p-0 m-0 mt-3">
@@ -271,8 +271,8 @@ const Customers = () => {
                   <select
                     className="form-control border-primary m-0 p-2 h-auto"
                     onChange={(e) =>
-                      setAllCustomers(
-                        filterByTime(e.target.value, allCustomers)
+                      setAllClients(
+                        filterByTime(e.target.value, allClients)
                       )
                     }
                   >
@@ -318,7 +318,7 @@ const Customers = () => {
                       type="button"
                       className="btn btn-primary h-100 p-2 "
                       onClick={() =>
-                        setAllCustomers(filterByDateRange(allCustomers))
+                        setAllClients(filterByDateRange(allClients))
                       }
                     >
                       <i className="fa fa-search"></i>
@@ -326,7 +326,7 @@ const Customers = () => {
                     <button
                       type="button"
                       className="btn btn-warning h-100 p-2"
-                      onClick={getAllCustomers}
+                      onClick={getAllClients}
                     >
                       استعادة
                     </button>
@@ -351,23 +351,23 @@ const Customers = () => {
               </tr>
             </thead>
             <tbody>
-              {allCustomers &&
-                allCustomers.map((customer, i) => {
+              {allClients &&
+                allClients.map((client, i) => {
                   if ((i >= startPagination) & (i < endPagination)) {
                     return (
                       <tr key={i}>
                         <td>{i + 1}</td>
-                        <td>{customer.name}</td>
-                        <td>{customer.phone}</td>
-                        <td>{customer.deliveryArea?.name}</td>
-                        <td>{customer.address}</td>
-                        <td>{customer.isVarified ? "موثق" : "غير موثق"}</td>
-                        <td>{customer.refusesOrders ? "رفض" : "لم يرفض "}</td>
-                        <td>{customer.notes}</td>
-                        <td>{formatDateTime(customer.createdAt)}</td>
+                        <td>{client.name}</td>
+                        <td>{client.phone}</td>
+                        <td>{client.deliveryArea?.name}</td>
+                        <td>{client.address}</td>
+                        <td>{client.isVarified ? "موثق" : "غير موثق"}</td>
+                        <td>{client.refusesOrders ? "رفض" : "لم يرفض "}</td>
+                        <td>{client.notes}</td>
+                        <td>{formatDateTime(client.createdAt)}</td>
                         <td>
                           <button
-                            data-target="#editcustomerModal"
+                            data-target="#editclientModal"
                             className="btn btn-sm btn-primary ml-2 "
                             data-toggle="modal"
                           >
@@ -376,15 +376,15 @@ const Customers = () => {
                               data-toggle="tooltip"
                               title="Edit"
                               onClick={() => {
-                                handelEditcustomer(customer);
-                                setcustomerId(customer._id);
+                                handelEditclient(client);
+                                setclientId(client._id);
                               }}
                             >
                               &#xE254;
                             </i>
                           </button>
                           <button
-                            data-target="#deletecustomerModal"
+                            data-target="#deleteclientModal"
                             className="btn btn-sm btn-danger"
                             data-toggle="modal"
                           >
@@ -393,7 +393,7 @@ const Customers = () => {
                               data-toggle="tooltip"
                               title="Delete"
                               onClick={() => {
-                                setcustomerId(customer._id);
+                                setclientId(client._id);
                               }}
                             >
                               &#xE872;
@@ -410,11 +410,11 @@ const Customers = () => {
             <div className="hint-text text-dark">
               عرض{" "}
               <b>
-                {allCustomers.length > endPagination
+                {allClients.length > endPagination
                   ? endPagination
-                  : allCustomers.length}
+                  : allClients.length}
               </b>{" "}
-              من <b>{allCustomers.length}</b> عنصر
+              من <b>{allClients.length}</b> عنصر
             </div>
             <ul className="pagination">
               <li onClick={EditPagination} className="page-item disabled">
@@ -473,10 +473,10 @@ const Customers = () => {
         </div>
       </div>
 
-      <div id="addcustomerModal" className="modal fade">
+      <div id="addclientModal" className="modal fade">
         <div className="modal-dialog modal-lg">
           <div className="modal-content shadow-lg border-0 rounded ">
-            <form onSubmit={createCustomer}>
+            <form onSubmit={createClient}>
               <div className="modal-header d-flex flex-wrap align-items-center text-light bg-primary">
                 <h4 className="modal-title">اضافة عميل</h4>
                 <button
@@ -550,7 +550,7 @@ const Customers = () => {
                     required
                     pattern="[A-Za-z\u0600-\u06FF\s]+"
                     name="address"
-                    value={customerData.address}
+                    value={clientData.address}
                     onChange={handleInputChange}
                   />
                   <div className="invalid-feedback">
@@ -616,10 +616,10 @@ const Customers = () => {
         </div>
       </div>
 
-      <div id="editcustomerModal" className="modal fade">
+      <div id="editclientModal" className="modal fade">
         <div className="modal-dialog modal-lg">
           <div className="modal-content shadow-lg border-0 rounded ">
-            <form onSubmit={updateCustomer}>
+            <form onSubmit={updateClient}>
               <div className="modal-header d-flex flex-wrap align-items-center text-light bg-primary">
                 <h4 className="modal-title">تعديل عميل</h4>
                 <button
@@ -642,7 +642,7 @@ const Customers = () => {
                     required
                     pattern="[A-Za-z\u0600-\u06FF\s]+"
                     name="name"
-                    value={customerData.name}
+                    value={clientData.name}
                     onChange={handleInputChange}
                   />
                   <div className="invalid-feedback">الرجاء إدخال اسم صالح.</div>
@@ -658,7 +658,7 @@ const Customers = () => {
                     required
                     pattern="[0-9]{11}"
                     name="phone"
-                    value={customerData.phone}
+                    value={clientData.phone}
                     onChange={handleInputChange}
                   />
                   <div className="invalid-feedback">
@@ -674,13 +674,13 @@ const Customers = () => {
                     name="deliveryArea"
                     required
                     className="form-control border-primary m-0 p-2 h-auto"
-                    value={customerData.deliveryArea}
+                    value={clientData.deliveryArea}
                     onChange={handleInputChange}
                   >
                     <option value="">
                       {
                         Areas.find(
-                          (area) => area._id === customerData.deliveryArea
+                          (area) => area._id === clientData.deliveryArea
                         )?.nema
                       }
                     </option>
@@ -702,7 +702,7 @@ const Customers = () => {
                     required
                     pattern="[A-Za-z\u0600-\u06FF\s]+"
                     name="address"
-                    value={customerData.address}
+                    value={clientData.address}
                     onChange={handleInputChange}
                   />
                   <div className="invalid-feedback">
@@ -718,11 +718,11 @@ const Customers = () => {
                     name="isVarified"
                     required
                     className="form-control border-primary m-0 p-2 h-auto"
-                    value={customerData.isVarified}
+                    value={clientData.isVarified}
                     onChange={handleInputChange}
                   >
                     <option value="">
-                      {customerData.isVarified ? "موثق" : "غير موثق"}
+                      {clientData.isVarified ? "موثق" : "غير موثق"}
                     </option>
                     <option value={true}>موثق</option>
                     <option value={false}>غير موثق</option>
@@ -737,11 +737,11 @@ const Customers = () => {
                     name="refusesOrders"
                     required
                     className="form-control border-primary m-0 p-2 h-auto"
-                    value={customerData.refusesOrders}
+                    value={clientData.refusesOrders}
                     onChange={handleInputChange}
                   >
                     <option value="">
-                      {customerData.refusesOrders
+                      {clientData.refusesOrders
                         ? "رفض اوردر"
                         : "لم يرفض الاوردر"}
                     </option>
@@ -757,7 +757,7 @@ const Customers = () => {
                   <textarea
                     className="form-control border-primary m-0 p-2 h-auto"
                     name="notes"
-                    value={customerData.notes}
+                    value={clientData.notes}
                     onChange={handleInputChange}
                   />
                   <div className="invalid-feedback">
@@ -784,10 +784,10 @@ const Customers = () => {
         </div>
       </div>
 
-      <div id="deletecustomerModal" className="modal fade">
+      <div id="deleteclientModal" className="modal fade">
         <div className="modal-dialog modal-lg">
           <div className="modal-content shadow-lg border-0 rounded ">
-            <form onSubmit={deleteCustomer}>
+            <form onSubmit={deleteClient}>
               <div className="modal-header d-flex flex-wrap align-items-center text-light bg-primary">
                 <h4 className="modal-title">حذف موظف</h4>
                 <button
@@ -828,4 +828,4 @@ const Customers = () => {
   );
 };
 
-export default Customers;
+export default Clients;

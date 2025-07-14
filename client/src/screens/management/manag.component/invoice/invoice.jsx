@@ -87,10 +87,10 @@ const InvoiceComponent = ({ ModalId, orderData, showModal, setShowModal }) => {
                 </p>
               </div>
 
-              {/* Customer Information */}
+              {/* Client Information */}
               {orderType === "Delivery" ? (
                 <div
-                  className="customer-info text-dark"
+                  className="client-info text-dark"
                   style={{ margin: "20px" }}
                 >
                   <h4>بيانات العميل</h4>
@@ -101,7 +101,7 @@ const InvoiceComponent = ({ ModalId, orderData, showModal, setShowModal }) => {
                 </div>
               ) : orderType === "Takeaway" ? (
                 <div
-                  className="customer-info text-dark"
+                  className="client-info text-dark"
                   style={{ marginBottom: "20px" }}
                 >
                   <h4>بيانات العميل</h4>

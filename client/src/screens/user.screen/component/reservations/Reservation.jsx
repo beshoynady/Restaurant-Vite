@@ -19,8 +19,8 @@ const Reservation = () => {
 
   const userId = userLoginInfo?.userinfo?.id;
 
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
   const [reservationNote, setReservationNote] = useState("");
   const [numberOfGuests, setNumberOfGuests] = useState("");
   const [tableInfo, setTableInfo] = useState({});
@@ -65,8 +65,8 @@ const Reservation = () => {
               tableInfo.tableNumber,
               userId,
               numberOfGuests,
-              customerName,
-              customerPhone,
+              clientName,
+              clientPhone,
               reservationDate,
               startTime,
               endTime,
@@ -86,7 +86,7 @@ const Reservation = () => {
                 type="text"
                 className="form-control border-primary m-0 p-2 h-auto"
                 id="name"
-                onChange={(e) => setCustomerName(e.target.value)}
+                onChange={(e) => setClientName(e.target.value)}
               />
             </div>
             <div className="col-md-4 mb-1">
@@ -100,7 +100,7 @@ const Reservation = () => {
                 type="tel"
                 className="form-control border-primary m-0 p-2 h-auto"
                 id="mobile"
-                onChange={(e) => setCustomerPhone(e.target.value)}
+                onChange={(e) => setClientPhone(e.target.value)}
               />
             </div>
           </div>

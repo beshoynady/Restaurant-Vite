@@ -67,7 +67,7 @@ const NavBar = () => {
   const [notifications, setNotifications] = useState([]);
   const [messages, setMessages] = useState([]);
 
-  const getAllCustomerMessage = async () => {
+  const getAllClientMessage = async () => {
     if (permissionUserMassage && !permissionUserMassage.read) {
       toast.warn("ليس لك صلاحية لعرض رسائل المستخدمين");
       return;
@@ -95,7 +95,7 @@ const NavBar = () => {
         { isSeen: true },
         config
       );
-      getAllCustomerMessage();
+      getAllClientMessage();
     } catch (error) {
       console.log(error);
     }
@@ -279,7 +279,7 @@ const NavBar = () => {
   }, []);
 
   useEffect(() => {
-    getAllCustomerMessage();
+    getAllClientMessage();
   }, []);
 
   return (

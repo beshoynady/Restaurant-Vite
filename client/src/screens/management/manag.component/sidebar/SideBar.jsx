@@ -425,7 +425,7 @@ const SideBar = () => {
                         <Link to="users">إدارة المستخدمين</Link>
                       </li>
                       <li className="list">
-                        <Link to="customers">إدارة العملاء</Link>
+                        <Link to="clients">إدارة العملاء</Link>
                       </li>
                       {(isProgrammer ||
                         permissionsList?.filter(

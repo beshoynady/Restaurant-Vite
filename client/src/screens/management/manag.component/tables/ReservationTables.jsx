@@ -38,8 +38,8 @@ const ReservationTables = () => {
   const [tableId, settableId] = useState("");
   const [tableNumber, settableNumber] = useState("");
 
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
   const [reservationNote, setReservationNote] = useState("");
   const [numberOfGuests, setNumberOfGuests] = useState("");
   const [reservationDate, setReservationDate] = useState();
@@ -200,7 +200,7 @@ const ReservationTables = () => {
   const [filteredClients, setFilteredClients] = useState([]);
 
   const clientByName = (allusers, name) => {
-    setCustomerName(name);
+    setClientName(name);
     const client = allusers&&allusers.filter(
       (user) => user.username.startsWith(name) === true
     );
@@ -507,8 +507,8 @@ const ReservationTables = () => {
                     <tr key={i}>
                       <td>{i + 1}</td>
                       <td>{reservation.tableNumber}</td>
-                      <td>{reservation.customerName}</td>
-                      <td>{reservation.customerPhone}</td>
+                      <td>{reservation.clientName}</td>
+                      <td>{reservation.clientPhone}</td>
                       <td>{reservation.numberOfGuests}</td>
                       <td>{formatDate(reservation.reservationDate)}</td>
                       <td>{formatTime(reservation.startTime)}</td>
@@ -536,10 +536,10 @@ const ReservationTables = () => {
                           className="btn btn-sm btn-primary ml-2 "
                           data-toggle="modal"
                           onClick={(e) => {
-                            setCustomerName(reservation.customerName);
+                            setClientName(reservation.clientName);
                             setReservationId(reservation._id);
-                            setCustomerName(reservation.customerName);
-                            setCustomerPhone(reservation.customerPhone);
+                            setClientName(reservation.clientName);
+                            setClientPhone(reservation.clientPhone);
                             setNumberOfGuests(reservation.numberOfGuests);
                             setEndTime(reservation.endTime);
                             setStartTime(reservation.startTime);
@@ -642,8 +642,8 @@ const ReservationTables = () => {
                   tableNumber,
                   userId,
                   numberOfGuests,
-                  customerName,
-                  customerPhone,
+                  clientName,
+                  clientPhone,
                   reservationDate,
                   startTime,
                   endTime,
@@ -699,7 +699,7 @@ const ReservationTables = () => {
                         className="form-control border-primary m-0 p-2 h-auto"
                         id="mobile"
                         requierd
-                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        onChange={(e) => setClientPhone(e.target.value)}
                       />
                     </div>
                   </div>
@@ -914,7 +914,7 @@ const ReservationTables = () => {
                         type="text"
                         className="form-control border-primary m-0 p-2 h-auto"
                         id="name"
-                        defaultValue={customerName}
+                        defaultValue={clientName}
                         onChange={(e) => clientByName(allusers, e.target.value)}
                       />
                       <ul>
@@ -935,8 +935,8 @@ const ReservationTables = () => {
                         type="tel"
                         className="form-control border-primary m-0 p-2 h-auto"
                         id="mobile"
-                        defaultValue={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        defaultValue={clientPhone}
+                        onChange={(e) => setClientPhone(e.target.value)}
                       />
                     </div>
                   </div>
