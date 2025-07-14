@@ -1,105 +1,45 @@
-import React,{useState, useEffect, useMemo, createContext, useContext} from 'react'
+import { createContext, useContext, useState, useMemo } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useCartCard } from './CartContext';
+import { useSocket } from './SocketContext';
+import { useAuth } from './AuthContext';
+import { useManagementData } from './ManagementDataContext';
 
-const ManagementContext = createContext();
-export const useManagement = useContext(ManagementContext)
+const InvoiceContext = createContext();
+export const useInvoice = () => useContext(InvoiceContext);
 
-export const ManagementProvider = ({Children}) => {
+const InvoiceProvider = ({ children }) => {
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const { itemsInCart, setItemsInCart, costOrder } = useCartCard();
+  const { cashierSocket } = useSocket();
+  const { handleGetTokenAndConfig, setIsLoading } = useAuth();
+  const { allOrders } = useManagementData();
 
-  
-    const [startPagination, setStartPagination] = useState(0);
-    const [endPagination, setEndPagination] = useState(5);
-  
-    // const [pagination, setpagination] = useState(5)
-    const EditPagination = (e) => {
-      if (e.target.innerHTML === "التالي") {
-        setStartPagination(startPagination + 5);
-        setEndPagination(endPagination + 5);
-      } else if (e.target.innerHTML === "السابق") {
-        if (endPagination <= 5) {
-          setStartPagination(0);
-          setEndPagination(5);
-        } else {
-          setStartPagination(startPagination - 5);
-          setEndPagination(endPagination - 5);
-        }
-      } else {
-        setStartPagination(e.target.innerHTML * 5 - 5);
-        setEndPagination(e.target.innerHTML * 5);
-      }
-    };
-
-      const filterByTime = (timeRange, array) => {
-        let filtered = [];
-    
-        const now = new Date();
-        const startOfToday = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate()
-        );
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay());
-        startOfWeek.setHours(0, 0, 0, 0);
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-    
-        switch (timeRange) {
-          case "today":
-            filtered = array.filter(
-              (item) => new Date(item.createdAt) >= startOfToday
-            );
-            break;
-          case "week":
-            filtered = array.filter(
-              (item) => new Date(item.createdAt) >= startOfWeek
-            );
-            break;
-          case "month":
-            filtered = array.filter(
-              (item) => new Date(item.createdAt) >= startOfMonth
-            );
-            break;
-          case "year":
-            filtered = array.filter(
-              (item) => new Date(item.createdAt) >= startOfYear
-            );
-            break;
-          default:
-            filtered = array;
-        }
-    
-        return filtered;
-      };
-    
-      const [StartDate, setStartDate] = useState(new Date());
-      const [EndDate, setEndDate] = useState(new Date());
-    
-      const filterByDateRange = (array) => {
-        const start = new Date(StartDate);
-        const end = new Date(EndDate);
-    
-        const filtered = array.filter((item) => {
-          const createdAt = new Date(item.createdAt);
-          return createdAt >= start && createdAt <= end;
-        });
-    
-        return filtered;
-      };
-
-   const handleGetTokenAndConfig = async () => {
-      await verifyToken();
-      const token = localStorage.getItem("token_e");
-      if (!token) {
-        toast.error("!رجاء تسجيل الدخول مره اخري");
-        return null;
-      }
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      return config;
-    };
+  const [myOrder, setmyOrder] = useState({});
+  const [myOrderId, setmyOrderId] = useState();
+  const [listProductsOrder, setlistProductsOrder] = useState([]);
+  const [orderUpdateDate, setorderUpdateDate] = useState("");
+  const [orderTotal, setorderTotal] = useState(0);
+  const [orderSubtotal, setorderSubtotal] = useState(0);
+  const [orderdeliveryFee, setorderdeliveryFee] = useState(0);
+  const [orderdiscount, setorderdiscount] = useState(0);
+  const [orderaddition, setorderaddition] = useState(0);
+  const [discount, setdiscount] = useState(0);
+  const [addition, setaddition] = useState(0);
+  const [salesTax, setsalesTax] = useState(0);
+  const [serviceTax, setserviceTax] = useState(0);
+  const [clientname, setclientname] = useState("");
+  const [clientNotes, setclientNotes] = useState("");
+  const [clientphone, setclientphone] = useState("");
+  const [clientaddress, setclientaddress] = useState("");
+  const [deliveryAreaId, setdeliveryAreaId] = useState(0);
+  const [deliveryFee, setdeliveryFee] = useState(0);
+  const [tablenum, settablenum] = useState();
+  const [newlistofproductorder, setnewlistofproductorder] = useState([]);
+  const [orderDetalisBySerial, setorderDetalisBySerial] = useState({});
+  const [productOrderToUpdate, setProductOrderToUpdate] = useState([]);
+  const [subtotalSplitOrder, setsubtotalSplitOrder] = useState(0);
 
   const createSerial = () => {
     const serial =
@@ -109,102 +49,6 @@ export const ManagementProvider = ({Children}) => {
     return serial;
   };
     
-      // ++++++++++ order ++++++++++++
-
-      const [allOrders, setAllOrders] = useState([]);
-      const getAllOrders = async () => {
-        try {
-          const config = await handleGetTokenAndConfig();
-          // Fetch all orders from the API
-          const response = await axios.get(apiUrl + "/api/order", config);
-          console.log({ order: response });
-          // Check if response is successful
-          if (response.status !== 200) {
-            throw new Error("Failed to fetch orders.");
-          }
-    
-          // Set fetched orders in the state
-          setAllOrders(response.data.reverse());
-        } catch (error) {
-          // Handle errors
-          console.error("Error fetching orders:", error.message);
-          // You can add additional error handling logic here, such as displaying an error message to the user.
-        }
-      };
-    
-      //+++++++++++ table ++++++++++++++
-      const [allTable, setAllTable] = useState([]);
-    
-      const getAllTable = async () => {
-        try {
-          const response = await axios.get(apiUrl + "/api/table");
-    
-          if (response.status === 200) {
-            const tables = response.data.allTables || [];
-    
-            if (tables.length === 0) {
-              console.warn(
-                "No tables found. The restaurant may be new or data is missing."
-              );
-              toast.warn(
-                "No tables found. The restaurant may be new or data is missing."
-              );
-            }
-    
-            setAllTable(tables);
-            console.log("Tables retrieved successfully:", tables);
-          } else {
-            console.error("Unexpected response status:", response.status);
-          }
-        } catch (error) {
-          console.error(
-            "Error getting all tables:",
-            error?.response?.data?.message || error.message
-          );
-        }
-      };
-    
-      // +++++++++++++++ user +++++++++++++
-      const [allUsers, setAllUsers] = useState([]);
-      const getAllUsers = async () => {
-        try {
-          const response = await axios.get(`${apiUrl}/api/user`);
-          if (response.status === 200) {
-            setAllUsers(response.data);
-          } else {
-            console.error(
-              "Failed to fetch users data: Unexpected response status",
-              response.status
-            );
-          }
-        } catch (error) {
-          console.error("Error fetching users data:", error);
-        }
-      };
-    
-      const [allEmployees, setAllEmployees] = useState([]);
-      const getAllEmployees = async () => {
-        try {
-          const config = await handleGetTokenAndConfig();
-          const response = await axios.get(`${apiUrl}/api/employee`, config);
-    
-          if (response.status === 200) {
-            setAllEmployees(response.data);
-            console.log("Employees data fetched successfully:", response.data);
-          } else {
-            console.error(
-              "Failed to fetch employees data: Unexpected response status",
-              response.status
-            );
-            // يمكنك إطلاق استثناء هنا أو عرض رسالة خطأ للمستخدم
-          }
-        } catch (error) {
-          console.error("Error fetching employees data:", error);
-          // يمكنك إطلاق استثناء هنا أو عرض رسالة خطأ للمستخدم
-        }
-      };
-    
-  const [newlistofproductorder, setnewlistofproductorder] = useState([]);
   const getOrderProductForTable = async (e, tableId) => {
     e.preventDefault();
     const config = await handleGetTokenAndConfig();
@@ -247,29 +91,6 @@ export const ManagementProvider = ({Children}) => {
   };
 
 
-   const [myOrder, setmyOrder] = useState({});
-    const [listProductsOrder, setlistProductsOrder] = useState([]);
-    const [orderUpdateDate, setorderUpdateDate] = useState("");
-    const [myOrderId, setmyOrderId] = useState();
-    const [tablenum, settablenum] = useState();
-    const [orderTotal, setorderTotal] = useState();
-    const [orderSubtotal, setorderSubtotal] = useState();
-    const [orderdeliveryFee, setorderdeliveryFee] = useState();
-    const [orderdiscount, setorderdiscount] = useState(0);
-    const [orderaddition, setorderaddition] = useState(0);
-    const [discount, setdiscount] = useState(0);
-    const [addition, setaddition] = useState(0);
-  
-    const [clientname, setclientname] = useState("");
-    const [clientNotes, setclientNotes] = useState("");
-    const [clientphone, setclientphone] = useState("");
-    const [clientaddress, setclientaddress] = useState("");
-    const [deliveryAreaId, setdeliveryAreaId] = useState(0);
-    const [deliveryFee, setdeliveryFee] = useState(0);
-  
-    const [salesTax, setsalesTax] = useState(0);
-    const [serviceTax, setserviceTax] = useState(0);
-  
     const createWaiterOrderForTable = async (tableId, waiterId) => {
       setIsLoading(true);
       try {
@@ -319,8 +140,8 @@ export const ManagementProvider = ({Children}) => {
           );
           toast.success("تم تحديث الطلب بنجاح!");
           cashierSocket.emit("neworder", "اوردر جديد من الويتر");
-          setitemsInCart([]);
-          setitemId([]);
+          setItemsInCart([]);
+          setItemsInCart([]);
           setaddition(0);
           setdiscount(0);
           setclientname("");
@@ -359,8 +180,8 @@ export const ManagementProvider = ({Children}) => {
   
           toast.success("تم إنشاء طلب جديد بنجاح!");
           cashierSocket.emit("neworder", "اوردر جديد من الويتر");
-          setitemsInCart([]);
-          setitemId([]);
+          setItemsInCart([]);
+          setItemsInCart([]);
           setaddition(0);
           setdiscount(0);
           setclientname("");
@@ -453,8 +274,8 @@ export const ManagementProvider = ({Children}) => {
   
         if (newOrder) {
           toast.success("تم إنشاء الطلب بنجاح");
-          setitemsInCart([]);
-          setitemId([]);
+          setItemsInCart([]);
+          setItemsInCart([]);
           setaddition(0);
           setdiscount(0);
           setclientname("");
@@ -516,7 +337,6 @@ export const ManagementProvider = ({Children}) => {
     }
   };
 
-  const [subtotalSplitOrder, setsubtotalSplitOrder] = useState(0);
 
   const calcSubtotalSplitOrder = (products = newlistofproductorder) => {
     try {
@@ -652,7 +472,7 @@ export const ManagementProvider = ({Children}) => {
           setorderdiscount(orderData.discount);
           setorderSubtotal(orderData.subTotal);
           setorderdeliveryFee(orderData.deliveryFee);
-          setitemsInCart([]);
+          setItemsInCart([]);
         }
       } else {
         // Handle the case when there are no orders for the employee
@@ -667,28 +487,142 @@ export const ManagementProvider = ({Children}) => {
     }
   };
 
+    //######### get order ditalis by serial
 
-    const [isDarkMode, setIsDarkMode] = useState(false);
-  
-    useEffect(() => {
-      // Toggle dark mode styles
-      const body = document.body;
-      if (isDarkMode) {
-        body.classList.add("dark-mode");
-      } else {
-        body.classList.remove("dark-mode");
+  const getOrderDetailsBySerial = async (e, serial) => {
+    e.preventDefault();
+
+    if (!serial) {
+      toast.error("يرجى إدخال رقم مسلسل صالح.");
+      return;
+    }
+
+    try {
+      const res = await axios.get(`${apiUrl}/api/order`);
+      const orders = res.data;
+
+      if (!orders || orders.length === 0) {
+        toast.warn("لم يتم العثور على أي طلبات.");
+        return;
       }
-    }, [isDarkMode]);
-  
-    const toggleDarkMode = () => {
-      setIsDarkMode(!isDarkMode);
-    };
 
+      const order = orders.find((o) => o.serial === serial);
+
+      if (!order) {
+        toast.warn(`لم يتم العثور على طلب بهذا الرقم: ${serial}`);
+        return;
+      }
+
+      setorderDetalisBySerial(order);
+      setProductOrderToUpdate(order.products || []);
+      setaddition(order.addition || 0);
+      setdiscount(order.discount || 0);
+
+      toast.success("تم جلب تفاصيل الطلب بنجاح.");
+    } catch (error) {
+      console.error("حدث خطأ أثناء جلب تفاصيل الطلب:", error);
+
+      if (error.response) {
+        toast.error(
+          `خطأ: ${error.response.data.message || "فشل في جلب تفاصيل الطلب."}`
+        );
+      } else if (error.request) {
+        toast.error("خطأ في الشبكة: تعذر الوصول إلى السيرفر.");
+      } else {
+        toast.error("حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
+      }
+    }
+  };
+
+  const updateOrder = async (e) => {
+    e.preventDefault();
+    const id = orderDetalisBySerial._id;
+    setIsLoading(true);
+
+    try {
+      const subTotal = costOrder;
+      const total = subTotal + addition - discount;
+
+      console.log({ subTotal });
+      console.log({ total });
+      console.log({ updatelist: productOrderToUpdate });
+
+      const response = await axios.put(`${apiUrl}/api/order/${id}`, {
+        products: productOrderToUpdate,
+        subTotal,
+        discount,
+        addition,
+        total,
+      });
+
+      if (response.status === 200) {
+        setorderDetalisBySerial({});
+        setProductOrderToUpdate([]);
+        setaddition(0);
+        setdiscount(0);
+        toast.success("تم تعديل الاوردر");
+      } else {
+        throw new Error("هناك خطأ في تعديل الاوردر");
+      }
+    } catch (error) {
+      console.error("Error updating order:", error);
+      toast.error("حدث خطأ أثناء تعديل الأوردر.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  
+  const invoiceValue = useMemo(() => ({
+    myOrder, setmyOrder,
+    myOrderId, setmyOrderId,
+    listProductsOrder, setlistProductsOrder,
+    orderUpdateDate, setorderUpdateDate,
+    orderTotal, setorderTotal,
+    orderSubtotal, setorderSubtotal,
+    orderdeliveryFee, setorderdeliveryFee,
+    orderdiscount, setorderdiscount,
+    orderaddition, setorderaddition,
+    discount, setdiscount,
+    addition, setaddition,
+    salesTax, setsalesTax,
+    serviceTax, setserviceTax,
+    clientname, setclientname,
+    clientNotes, setclientNotes,
+    clientphone, setclientphone,
+    clientaddress, setclientaddress,
+    deliveryAreaId, setdeliveryAreaId,
+    deliveryFee, setdeliveryFee,
+    tablenum, settablenum,
+    newlistofproductorder, setnewlistofproductorder,
+    orderDetalisBySerial, setorderDetalisBySerial,
+    productOrderToUpdate, setProductOrderToUpdate,
+    subtotalSplitOrder, setsubtotalSplitOrder,
+    createSerial,
+    getOrderProductForTable,
+    createWaiterOrderForTable,
+    createcashierOrder,
+    lastInvoiceByCashier,
+    getOrderDetailsBySerial,
+    updateOrder,
+    putNumOfPaid,
+    calcSubtotalSplitOrder,
+    handlePayExtras,
+    splitInvoice
+  }), [
+    myOrder, myOrderId, listProductsOrder, orderUpdateDate, orderTotal,
+    orderSubtotal, orderdeliveryFee, orderdiscount, orderaddition,
+    discount, addition, salesTax, serviceTax, clientname, clientNotes,
+    clientphone, clientaddress, deliveryAreaId, deliveryFee,
+    tablenum, newlistofproductorder, orderDetalisBySerial,
+    productOrderToUpdate, subtotalSplitOrder
+  ]);
 
   return (
-    <ManagementContext.Provider >
-        {Children}
-    </ManagementContext.Provider>
-  )
-}
+    <InvoiceContext.Provider value={invoiceValue}>
+      {children}
+    </InvoiceContext.Provider>
+  );
+};
 
+export default InvoiceProvider;
