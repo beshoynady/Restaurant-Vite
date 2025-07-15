@@ -12,15 +12,10 @@ import Reservation from "./component/reservations/Reservation";
 import Footer from "./component/footer/Footer";
 import Offline from "./offline";
 
-import { dataContext } from "../../App";
-
+import { useShared } from "../../context/SharedContext";
 const Userscreen = () => {
-  const {
-    restaurantData,
-    allProducts,
-    productsOffer,
-    sizesOffer,
-  } = useContext(dataContext);
+  const {restaurantData, allProducts, productsOffer, sizesOffer} = useShared
+  
 
   // عرض صفحة Offline إذا كان isActive = false
   if (!restaurantData?.isActive) {

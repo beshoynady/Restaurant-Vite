@@ -338,48 +338,48 @@ const InvoiceProvider = ({ children }) => {
   };
 
 
-  const calcSubtotalSplitOrder = (products = newlistofproductorder) => {
-    try {
-      let total = 0;
-
-      products.forEach((product) => {
-        let originalProduct;
-
-        if (product.sizeId) {
-          originalProduct = listProductsOrder.find(
-            (pro) =>
-              pro.productId._id === product.productId._id &&
-              pro.sizeId === product.sizeId
-          );
-        } else {
-          originalProduct = listProductsOrder.find(
-            (pro) => pro.productId._id === product.productId._id
-          );
-        }
-
-        if (originalProduct) {
-          const numOfPaidDifference = Math.abs(
-            originalProduct.numOfPaid - product.numOfPaid
-          );
-          console.log({ numOfPaidDifference });
-
-          const priceToUse =
-            originalProduct.priceAfterDiscount > 0
-              ? originalProduct.priceAfterDiscount
-              : originalProduct.price;
-          const subTotal = numOfPaidDifference * priceToUse;
-
-          total += subTotal;
-        }
-      });
-
-      setsubtotalSplitOrder(total);
-      console.log({ total, products });
-    } catch (error) {
-      console.error(error);
-      toast.error("حدث خطأ أثناء حساب المجموع للطلب المقسم.");
-    }
-  };
+   const calcSubtotalSplitOrder = (products = newlistofproductorder) => {
+     try {
+       let total = 0;
+ 
+       products.forEach((product) => {
+         let originalProduct;
+ 
+         if (product.sizeId) {
+           originalProduct = listProductsOrder.find(
+             (pro) =>
+               pro.productId._id === product.productId._id &&
+               pro.sizeId === product.sizeId
+           );
+         } else {
+           originalProduct = listProductsOrder.find(
+             (pro) => pro.productId._id === product.productId._id
+           );
+         }
+ 
+         if (originalProduct) {
+           const numOfPaidDifference = Math.abs(
+             originalProduct.numOfPaid - product.numOfPaid
+           );
+           console.log({ numOfPaidDifference });
+ 
+           const priceToUse =
+             originalProduct.priceAfterDiscount > 0
+               ? originalProduct.priceAfterDiscount
+               : originalProduct.price;
+           const subTotal = numOfPaidDifference * priceToUse;
+ 
+           total += subTotal;
+         }
+       });
+ 
+       setsubtotalSplitOrder(total);
+       console.log({ total, products });
+     } catch (error) {
+       console.error(error);
+       toast.error("حدث خطأ أثناء حساب المجموع للطلب المقسم.");
+     }
+   };
 
   const handlePayExtras = (productIndex, extraId, isPaid) => {
     const updatedProducts = newlistofproductorder.map((product, i) => {

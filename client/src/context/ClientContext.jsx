@@ -68,65 +68,137 @@ const ClientProvider = ({ children }) => {
   };
 
   // ------------------- Create or Update Delivery Order -------------------
-  const createDeliveryOrderByClient = async (userId, currentAddress, delivery_fee) => {
+  const createDeliveryOrderByClient = async (
+    userId,
+    currentAddress,
+    delivery_fee
+  ) => {
     try {
       setIsLoading(true);
       const config = await handleGetTokenAndConfig();
+      // console.log({ itemsInCart })
+      // Find the user's orders
+      const userOrders =
+        allOrders &&
+        allOrders.filter((order) => order.user && order.user?._id === userId);
+      const lastUserOrder = userOrders.length > 0 ? userOrders[0] : null;
 
-      const userOrders = allOrders?.filter((order) => order.user?._id === userId);
-      const lastUserOrder = userOrders?.[0] || null;
-
-      const updatedProducts = itemsInCart.map((item) => ({ ...item, isAdd: true }));
-      const subTotal = costOrder + (lastUserOrder?.subTotal || 0);
-      const deliveryFee = delivery_fee;
-      const newsalesTax = (lastUserOrder?.salesTax || 0) + salesTax;
-      const total = subTotal + newsalesTax + deliveryFee;
-
-      if (lastUserOrder?.isActive) {
+      // Check if the last user order is active
+      if (lastUserOrder && lastUserOrder.isActive) {
         const orderId = lastUserOrder._id;
-        const products = lastUserOrder.status === "Preparing"
-          ? [...updatedProducts, ...lastUserOrder.products]
-          : [...itemsInCart, ...lastUserOrder.products];
+        const oldProducts = lastUserOrder.products;
+        const oldSubTotal = lastUserOrder.subTotal;
+        const newsalesTaxt = lastUserOrder.salesTax + salesTax;
+        const subTotal = costOrder + oldSubTotal;
+        const deliveryFee = delivery_fee;
+        const total = subTotal + salesTax + deliveryFee;
 
-        await axios.put(`${apiUrl}/api/order/${orderId}`, {
-          products,
-          subTotal,
-          deliveryFee,
-          salesTax: newsalesTax,
-          total,
-          status: "Pending",
-          orderType: "Delivery",
-        }, config);
+        // Update order if it's in 'Preparing' status
+        if (lastUserOrder.status === "Preparing") {
+          const updatedProducts = itemsInCart.map((item) => ({
+            ...item,
+            isAdd: true,
+          }));
+          const products = [...updatedProducts, ...oldProducts];
+          const status = "Pending";
+          const orderType = "Delivery";
 
-        cashierSocket.emit("neworder", `تعديل/إضافة طلب ديليفري للرقم ${lastUserOrder.serial}`);
-        toast.success("تم تعديل/إضافة الطلب بنجاح!");
+          await axios.put(
+            `${apiUrl}/api/order/${orderId}`,
+            {
+              products,
+              subTotal,
+              deliveryFee,
+              salesTaxt: newsalesTaxt,
+              total,
+              status,
+              orderType,
+            },
+            config
+          );
+
+          setitemsInCart([]);
+          setitemId([]);
+          getAllProducts();
+          cashierSocket.emit(
+            "neworder",
+            `اضافه طلبات الي اوردر ديليفري ${lastUserOrder.serial}`
+          );
+
+          toast.success("تم اضافه الاصناف الي الاوردر!");
+        } else {
+          const products = [...itemsInCart, ...oldProducts];
+          const status = "Pending";
+          const orderType = "Delivery";
+
+          await axios.put(
+            `${apiUrl}/api/order/${orderId}`,
+            {
+              products,
+              subTotal,
+              deliveryFee,
+              salesTaxt: newsalesTaxt,
+              total,
+              status,
+              orderType,
+            },
+            config
+          );
+
+          setitemsInCart([]);
+          getAllProducts();
+          cashierSocket.emit("neworder", "تم تعديل ارودر ديفرري");
+          toast.success("تم تعديل الاوردر بنجاح!");
+        }
+
+        setIsLoading(false);
       } else {
+        // Create a new order
         const serial = createSerial();
-        const findUser = allUsers.find((u) => u._id === userId);
+        const findUser = allUsers.find((u, i) => u._id === userId);
+        const user = findUser ? userId : null;
+        const products = [...itemsInCart];
+        const subTotal = costOrder;
+        const deliveryFee = delivery_fee;
+        const name = findUser ? findUser.username : "";
+        const phone = findUser ? findUser.phone : "";
+        const address = currentAddress;
+        const orderType = "Delivery";
+        const total = subTotal + deliveryFee + salesTax;
 
-        await axios.post(`${apiUrl}/api/order`, {
-          serial,
-          products: itemsInCart,
-          subTotal: costOrder,
-          salesTax,
-          deliveryFee,
-          total,
-          user: findUser?._id || null,
-          name: findUser?.username || "",
-          phone: findUser?.phone || "",
-          address: currentAddress,
-          orderType: "Delivery"
-        }, config);
+        await axios.post(
+          `${apiUrl}/api/order`,
+          {
+            serial,
+            products,
+            subTotal,
+            salesTax,
+            deliveryFee,
+            total,
+            user,
+            name,
+            address,
+            phone,
+            orderType,
+          },
+          config
+        );
 
+        setitemsInCart([]);
+        setitemId([]);
+        getAllProducts();
+        toast.success("تم عمل اوردر جديد بنجاح!");
         cashierSocket.emit("neworder", "اوردر ديليفري جديد");
-        toast.success("تم عمل أوردر جديد بنجاح!");
+        setIsLoading(false);
       }
 
-      setItemsInCart([]);
-      getAllProducts();
+      setitemsInCart([]);
+      setitemId([]);
+      setIsLoading(false);
     } catch (error) {
-      console.error("Error processing delivery order:", error);
-      toast.error("حدث خطأ أثناء تنفيذ الطلب. حاول مرة أخرى.");
+      console.error("An error occurred while processing the order:", error);
+      toast.error("حدث خطأ اثناء عمل الاوردر رجاء المحاوله مره اخري");
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -136,47 +208,113 @@ const ClientProvider = ({ children }) => {
   const createOrderForTableByClient = async (tableId) => {
     setIsLoading(true);
     try {
-      const tableOrders = allOrders?.filter((order) => order.table?._id === tableId);
-      const lastOrder = tableOrders?.[0];
-      const subTotal = costOrder + (lastOrder?.subTotal || 0);
-      const total = subTotal + salesTax + serviceTax + addition - discount;
+      // Find orders for the specified table
+      const tableOrders =
+        allOrders && allOrders.filter((order) => order.table?._id === tableId);
+      const lastTableOrder = tableOrders.length > 0 ? tableOrders[0] : {};
+      const lastTableOrderActive = lastTableOrder && lastTableOrder.isActive;
 
-      const newOrderData = {
-        products: [...itemsInCart, ...(lastOrder?.products || [])],
-        subTotal,
-        addition: (lastOrder?.addition || 0) + addition,
-        discount: (lastOrder?.discount || 0) + discount,
-        salesTax: (lastOrder?.salesTax || 0) + salesTax,
-        serviceTax: (lastOrder?.serviceTax || 0) + serviceTax,
-        total,
-        status: lastOrder?.status === "Preparing" ? "Pending" : "Pending",
-      };
+      if (lastTableOrderActive) {
+        const orderId = lastTableOrder._id;
+        const oldProducts = lastTableOrder.products;
 
-      if (lastOrder?.isActive) {
-        await axios.put(`${apiUrl}/api/order/${lastOrder._id}`, newOrderData);
-        toast.success("تم تحديث الطلب بنجاح!");
-        cashierSocket.emit("neworder", `طلب محدث للطاولة ${lastOrder?.tableNumber}`);
+        const oldSubTotal = lastTableOrder.subTotal;
+        const newAddition = lastTableOrder.addition + addition;
+        const newDiscount = lastTableOrder.discount + discount;
+        const newsalesTaxt = lastTableOrder.salesTax + salesTax;
+        const newserviceTax = lastTableOrder.serviceTax + serviceTax;
+        const oldTotal = lastTableOrder.total;
+        const status = lastTableOrder.status;
+        const subTotal = costOrder + oldSubTotal;
+        const total =
+          oldTotal + costOrder + salesTax + serviceTax + addition - discount;
+
+        // Update the existing order
+        if (status === "Preparing") {
+          const updatedProducts = itemsInCart.map((item) => ({
+            ...item,
+            isAdd: true,
+          }));
+          const products = [...updatedProducts, ...oldProducts];
+          const newOrderData = {
+            products,
+            subTotal,
+            addition: newAddition,
+            discount: newDiscount,
+            salesTax: newsalesTaxt,
+            serviceTax: newserviceTax,
+            total,
+            status,
+          };
+
+          await axios.put(`${apiUrl}/api/order/${orderId}`, newOrderData);
+          // Toast for updating order
+          toast.success("تم تحديث الطلب بنجاح!");
+          cashierSocket.emit(
+            "neworder",
+            ` اضافت طاولة${lastTableOrderActive.tableNumber} طلبات جديدة`
+          );
+        } else {
+          const products = [...itemsInCart, ...oldProducts];
+          const newOrderData = {
+            products,
+            subTotal,
+            addition: newAddition,
+            discount: newDiscount,
+            salesTax: newsalesTaxt,
+            serviceTax: newserviceTax,
+            total,
+            status: "Pending",
+          };
+
+          await axios.put(`${apiUrl}/api/order/${orderId}`, newOrderData);
+          // Toast for updating order
+          cashierSocket.emit(
+            "neworder",
+            ` اضافت طاولة${lastTableOrderActive.tableNumber} طلبات جديدة`
+          );
+
+          toast.success("تم تحديث الطلب بنجاح!");
+        }
       } else {
+        // Create a new order
         const serial = createSerial();
-        const table = allTable.find((t) => t._id === tableId);
-        const user = allUsers.find((u) => u._id === tableId);
+        const table = allTable.find((t) => t._id === tableId) ? tableId : null;
+        const user = allUsers.find((u) => u._id === tableId) ? tableId : null;
+        const products = [...itemsInCart];
+        const subTotal = costOrder;
+        const total = subTotal + salesTax + serviceTax;
+        const orderType = "Internal";
 
-        await axios.post(`${apiUrl}/api/order`, {
-          ...newOrderData,
+        const newOrderData = {
           serial,
-          table: table?._id,
-          user: user?._id,
-          orderType: "Internal",
-        });
+          products,
+          subTotal,
+          salesTax,
+          serviceTax,
+          total,
+          table,
+          user,
+          orderType,
+        };
+
+        await axios.post(`${apiUrl}/api/order`, newOrderData);
+        // Toast for creating a new order
         toast.success("تم إنشاء طلب جديد بنجاح!");
-        cashierSocket.emit("neworder", `طلب جديد للطاولة ${table?.tableNumber}`);
+        cashierSocket.emit(
+          "neworder",
+          `اوردر جديد علي طاوله ${table.tableNumber}`
+        );
       }
 
-      setItemsInCart([]);
+      // Reset cart items and reload products
+      setitemsInCart([]);
+      setitemId([]);
       getAllProducts();
     } catch (error) {
-      console.error("Error processing table order:", error);
-      toast.error("حدث خطأ أثناء تنفيذ الطلب على الطاولة");
+      console.error(error);
+      // Toast for error
+      toast.error("حدث خطأ أثناء إنشاء/تحديث الطلب");
     } finally {
       setIsLoading(false);
     }
@@ -184,31 +322,69 @@ const ClientProvider = ({ children }) => {
 
   // ------------------- Fetch and Display Active Invoice -------------------
   const invoice = async (clientId) => {
-    if (!clientId) return toast.error("يرجى تسجيل الدخول أو مسح رمز الاستجابة السريعة");
+    if (!clientId) {
+      toast.error("يرجى تسجيل الدخول أو مسح رمز الاستجابة السريعة");
+      return;
+    }
 
     try {
-      const tableOrder = allOrders?.filter((o) => o.table?._id === clientId)[0];
-      const userOrder = allOrders?.filter((o) => o.user?._id === clientId)[0];
-      const activeOrder = tableOrder?.isActive ? tableOrder : userOrder?.isActive ? userOrder : null;
+      // Log client ID for debugging
+      console.log(clientId);
 
-      if (activeOrder) {
-        const res = await axios.get(`${apiUrl}/api/order/${activeOrder._id}`);
-        const data = res.data;
+      // Filter orders related to the client's table
+      const tableOrder =
+        allOrders &&
+        allOrders.filter(
+          (order) => order.table && order.table._id === clientId
+        );
+      const lastTableOrder = tableOrder.length > 0 ? tableOrder[0] : null;
+      const lastTableOrderActive = lastTableOrder
+        ? lastTableOrder.isActive
+        : false;
 
-        if (tableOrder?.isActive) settablenum(data.tableNumber);
+      // Filter orders related to the user
+      const userOrder =
+        allOrders &&
+        allOrders.filter((order) => order.user && order.user._id === clientId);
+      const lastUserOrder = userOrder.length > 0 ? userOrder[0] : null;
+      const lastUserOrderActive = lastUserOrder
+        ? lastUserOrder.isActive
+        : false;
+
+      // Fetch and set order details based on the active order found
+      if (lastTableOrderActive) {
+        const orderId = lastTableOrder._id;
+        const myOrder = await axios.get(`${apiUrl}/api/order/${orderId}`);
+        const data = myOrder.data;
+
+        // Update state with the order details
+        settablenum(data.tableNumber);
         setmyOrder(data);
         setmyOrderId(data._id);
         setlistProductsOrder(data.products);
         setorderUpdateDate(data.updatedAt);
         setorderTotal(data.total);
         setorderSubtotal(data.subTotal);
-        setorderdeliveryFee(data.deliveryFee || 0);
-        setItemsInCart([]);
+        setitemsInCart([]);
+      } else if (lastUserOrderActive) {
+        const orderId = lastUserOrder._id;
+        const myOrder = await axios.get(`${apiUrl}/api/order/${orderId}`);
+        const data = myOrder.data;
+
+        // Update state with the order details
+        setmyOrder(data);
+        setmyOrderId(data._id);
+        setlistProductsOrder(data.products);
+        setorderUpdateDate(data.updatedAt);
+        setorderTotal(data.total);
+        setorderSubtotal(data.subTotal);
+        setorderdeliveryFee(data.deliveryFee);
+        setitemsInCart([]);
       } else {
         toast.info("لا توجد طلبات نشطة لهذا العميل");
       }
     } catch (error) {
-      console.error("Error fetching invoice:", error);
+      console.error("Error fetching the invoice:", error);
       toast.error("حدث خطأ أثناء جلب الفاتورة");
     }
   };

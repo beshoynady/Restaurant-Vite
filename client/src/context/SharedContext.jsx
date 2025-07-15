@@ -148,30 +148,70 @@ export const SharedProvider = ({ children }) => {
   };
 
   const getAvailableTables = (reservationDate, startTime, endTime) => {
-    const filteredByDate = allReservations.filter((res) => {
-      const resDate = new Date(res.reservationDate);
-      const selDate = new Date(reservationDate);
-      return resDate.toDateString() === selDate.toDateString();
-    });
+    console.log({ allReservations, reservationDate, startTime, endTime });
 
-    const overlapping = filteredByDate.filter((res) => {
-      if (["canceled", "Missed reservation time"].includes(res.status)) return false;
-      const startRes = new Date(res.startTime).getTime();
-      const endRes = new Date(res.endTime).getTime();
-      const startSel = new Date(startTime).getTime();
-      const endSel = new Date(endTime).getTime();
+    // Filter reservations that match the selected date
+    const filterReservationsByDate = allReservations?.filter((reservation) => {
+
+      const reservationDateObj = new Date(reservation.reservationDate);
+      const selectedDateObj = new Date(reservationDate);
+
       return (
-        (startRes <= startSel && endRes >= startSel) ||
-        (startRes <= endSel && endRes >= endSel) ||
-        (startSel <= startRes && endSel >= endRes)
+        reservationDateObj.getFullYear() === selectedDateObj.getFullYear() &&
+        reservationDateObj.getMonth() === selectedDateObj.getMonth() &&
+        reservationDateObj.getDate() === selectedDateObj.getDate()
       );
     });
 
+    // Filter reservations that overlap with the selected time range
+    const filterReservationsByTime = filterReservationsByDate?.filter(
+      (reservation) => {
+        if (
+          reservation.status === "canceled" ||
+          reservation.status === "Missed reservation time"
+        ) {
+          return false;
+        }
+
+        const startReservationTime = new Date(reservation.startTime).getTime();
+        const endReservationTime = new Date(reservation.endTime).getTime();
+        const startSelectedTime = new Date(startTime).getTime();
+        const endSelectedTime = new Date(endTime).getTime();
+
+        // Check if there is a time overlap
+        return (
+          (startReservationTime <= startSelectedTime &&
+            endReservationTime >= startSelectedTime) ||
+          (startReservationTime <= endSelectedTime &&
+            endReservationTime >= endSelectedTime) ||
+          (startSelectedTime <= startReservationTime &&
+            endSelectedTime >= endReservationTime)
+        );
+      }
+    );
+
+    console.log({ filterReservationsByDate, filterReservationsByTime });
+
+    // Retrieve all table IDs
     const allTableIds = allTable?.map((table) => table._id) || [];
-    const reservedIds = overlapping.map((res) => res.tableId?._id);
-    const availableIds = allTableIds.filter((id) => !reservedIds.includes(id));
-    setAvailableTableIds(availableIds);
-    return availableIds;
+    console.log({ allTableIds });
+
+    // Retrieve reserved table IDs based on the filtered reservations
+    const reservedTableIds = [];
+    filterReservationsByTime &&
+      filterReservationsByTime?.map((reservation) =>
+        reservedTableIds.push(reservation.tableId?._id)
+      );
+
+    // Find available tables by excluding reserved ones
+    const availableTableIds = allTableIds.filter(
+      (tableId) => !reservedTableIds.includes(tableId)
+    );
+    console.log({ availableTableIds });
+
+    // Update state with available table IDs
+    setavailableTableIds(availableTableIds);
+    return availableTableIds;
   };
 
   const createReservations = async (
@@ -190,18 +230,64 @@ export const SharedProvider = ({ children }) => {
   ) => {
     try {
       e.preventDefault();
+      // setIsLoading(true)
+
+      // Logging input data for debugging purposes
+      // console.log({ tableId, tableNumber, userId, numberOfGuests, clientName, clientPhone, reservationDate, startTime, endTime, reservationNote, createdBy });
+
+      // Convert reservationDate to Date object
       const selectedDate = new Date(reservationDate);
-      const conflict = allReservations.find((res) => {
-        const sameTable = res.tableId === tableId;
-        const sameDate = new Date(res.reservationDate).toDateString() === selectedDate.toDateString();
-        const overlap =
-          (new Date(res.startTime).getTime() <= new Date(startTime).getTime() &&
-            new Date(res.endTime).getTime() >= new Date(startTime).getTime()) ||
-          (new Date(res.startTime).getTime() <= new Date(endTime).getTime() &&
-            new Date(res.endTime).getTime() >= new Date(endTime).getTime());
-        return sameTable && sameDate && overlap;
-      });
-      if (conflict) return toast.error("هذه الطاولة محجوزة في هذا الوقت");
+
+      // Logging selectedDate for debugging purposes
+      console.log({ selectedDate: selectedDate.getTime() });
+
+      // Filter reservations by table and selected date
+      const filterReservationsByTable = allReservations.filter(
+        (reservation) => {
+          const reservationDateObj = new Date(reservation.reservationDate);
+          const selectedDateObj = new Date(selectedDate);
+
+          return (
+            reservation.tableId === tableId &&
+            reservationDateObj.getFullYear() ===
+            selectedDateObj.getFullYear() &&
+            reservationDateObj.getMonth() === selectedDateObj.getMonth() &&
+            reservationDateObj.getDate() === selectedDateObj.getDate()
+          );
+        }
+      );
+
+      // Logging filterReservationsByTable for debugging purposes
+      // console.log({ filterReservationsByTable });
+      // Filter reservations by table and selected date
+      const conflictingReservation = filterReservationsByTable.find(
+        (reservation) => {
+          const startReservationTime = new Date(
+            reservation.startTime
+          ).getTime();
+          const endReservationTime = new Date(reservation.endTime).getTime();
+          const startSelectedTime = new Date(startTime).getTime();
+          const endSelectedTime = new Date(endTime).getTime();
+          return (
+            (startReservationTime <= startSelectedTime &&
+              endReservationTime >= startSelectedTime) ||
+            (startReservationTime <= endSelectedTime &&
+              endReservationTime >= endSelectedTime) ||
+            (startSelectedTime <= startReservationTime &&
+              endSelectedTime >= endReservationTime)
+          );
+        }
+      );
+
+      // console.log({ conflictingReservation });
+
+      // Display error message if there is a conflicting reservation
+      if (conflictingReservation) {
+        toast.error("هذه الطاولة محجوزة في هذا الوقت");
+        return;
+      }
+
+      // Send request to the server
       const response = await axios.post(`${apiUrl}/api/reservation`, {
         tableId,
         tableNumber,
@@ -215,15 +301,21 @@ export const SharedProvider = ({ children }) => {
         createdBy: createdBy || null,
         reservationNote: reservationNote || "",
       });
+
+      // Check if the request was successful
       if (response.status === 201) {
+        // Update reservations data
         getAllReservations();
-        toast.success("تم الحجز بنجاح");
+        // Display success message
+        toast.success("تم حجز الطاولة بنجاح");
       } else {
-        toast.error("حدث خطأ أثناء الحجز");
+        // Display error message if the request was unsuccessful
+        toast.error("حدث خطأ أثناء عملية الحجز! الرجاء المحاولة مرة أخرى");
       }
     } catch (error) {
+      // Display error message if an error occurred
       console.error(error);
-      toast.error("فشل الحجز! حاول مرة أخرى.");
+      toast.error("فشل عملية الحجز! الرجاء المحاولة مرة أخرى");
     } finally {
       setIsLoading(false);
     }
@@ -293,8 +385,9 @@ export const SharedProvider = ({ children }) => {
     ]
   );
 
-  return 
-  <SharedContext.Provider value={sharedValue}>
-    {children}
-  </SharedContext.Provider>;
-};
+  return (
+    <SharedContext.Provider value={sharedValue}>
+      {children}
+    </SharedContext.Provider>
+  )
+}

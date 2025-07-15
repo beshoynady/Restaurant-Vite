@@ -11,7 +11,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({ Children }) => {
+export const AuthProvider = ({ children }) => {
   // Store permissions assigned to the logged-in employee
   const [permissionsList, setPermissionsList] = useState([]);
 
@@ -137,7 +137,7 @@ export const AuthProvider = ({ Children }) => {
 
   return (
     <AuthContext.Provider value={authValue}>
-      {Children}
+      {children}
     </AuthContext.Provider>
   );
 };

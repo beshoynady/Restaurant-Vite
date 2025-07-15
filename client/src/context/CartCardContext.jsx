@@ -116,54 +116,254 @@ export const CartCardProvider = ({ children }) => {
     }
   };
 
-  // Remove item from cart
+
+
+  // delete item from cart by id
+
+  const resetProductQuantityAndNotes = (productId, sizeId) => {
+    try {
+      // Find the product either in the order or in all products
+      const productToUpdate =
+        productOrderToUpdate.length > 0
+          ? productOrderToUpdate.find((product) => product._id === productId)
+          : allProducts.find((product) => product._id === productId);
+
+      console.log({ productToUpdate });
+      if (!productToUpdate) {
+        throw new Error("Product not found.");
+      }
+
+      if (productToUpdate.hasSizes) {
+        productToUpdate.sizes.filter(
+          (size) => size._id === sizeId
+        )[0].sizeQuantity = 0;
+        productToUpdate.sizes.filter(
+          (size) => size._id === sizeId
+        )[0].extrasSelected = [];
+        productToUpdate.sizes.filter((size) => size._id === sizeId)[0].notes =
+          "";
+      } else {
+        // Reset the quantity and notes of the found product to zero
+        productToUpdate.quantity = 0;
+        productToUpdate.extrasSelected = [];
+        productToUpdate.notes = "";
+      }
+      // console.log({ productToUpdate })
+    } catch (error) {
+      console.error(
+        "Error resetting product quantity and notes:",
+        error.message
+      );
+      // You can handle the error appropriately, such as displaying an error message to the user.
+    }
+  };
+
   const deleteItemFromCart = (id, sizeId) => {
-    const updatedList = sizeId
-      ? itemsInCart.filter((item) => item.sizeId !== sizeId)
-      : itemsInCart.filter((item) => item.productId !== id);
-    setItemsInCart(updatedList);
-    setItemId(itemId.filter((i) => i !== (sizeId || id)));
-    calculateOrderCost();
+    try {
+      if (sizeId) {
+        console.log({ itemsInCart, sizeId });
+        // Determine which list to operate on based on the presence of items in productOrderToUpdate
+        const updatedList =
+          productOrderToUpdate.length > 0
+            ? productOrderToUpdate.filter(
+                (product) => product.sizeId !== sizeId
+              )
+            : itemsInCart.filter((item) => item.sizeId !== sizeId);
+
+        console.log({ updatedList });
+        // Update the list of item IDs
+        const updatedItemId = itemId.filter((itemId) => itemId !== sizeId);
+        if (updatedList.length === 0) {
+          getAllProducts();
+          // return
+        }
+        // console.log({ itemsInCart })
+        // Update the state based on the list being modified
+        if (productOrderToUpdate.length > 0) {
+          setproductOrderToUpdate(updatedList);
+        } else {
+          setitemsInCart(updatedList);
+          setitemId(updatedItemId);
+        }
+
+        // Reset the quantity and notes of the deleted item
+        resetProductQuantityAndNotes(id, sizeId);
+      } else {
+        console.log({ itemsInCart, id });
+        // Determine which list to operate on based on the presence of items in productOrderToUpdate
+        const updatedList =
+          productOrderToUpdate.length > 0
+            ? productOrderToUpdate.filter((product) => product.productId !== id)
+            : itemsInCart.filter((item) => item.productId !== id);
+
+        console.log({ updatedList });
+        // Update the list of item IDs
+        const updatedItemId = itemId.filter((itemId) => itemId !== id);
+        if (updatedList.length === 0) {
+          getAllProducts();
+          // return
+        }
+
+        // Update the state based on the list being modified
+        if (productOrderToUpdate.length > 0) {
+          setproductOrderToUpdate(updatedList);
+        } else {
+          setitemsInCart(updatedList);
+          setitemId(updatedItemId);
+        }
+
+        // Reset the quantity and notes of the deleted item
+        resetProductQuantityAndNotes(id, sizeId);
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error.message);
+      // You can handle the error appropriately, such as displaying an error message to the user.
+    }
   };
 
-  // Increment product quantity
   const incrementProductQuantity = (productId, sizeId) => {
-    const updated = itemsInCart.map((item) => {
-      if (item.productId === productId && (!sizeId || item.sizeId === sizeId)) {
-        return { ...item, quantity: item.quantity + 1 };
+    try {
+      // incrementProductQuantity the count state
+      setCount(count + 1);
+      console.log({ productOrderToUpdate, productId, sizeId });
+      // Find the product either in the order or in all products
+      const findProduct =
+        productOrderToUpdate.length > 0
+          ? productOrderToUpdate.find((product) => product._id === productId)
+          : allProducts.find((product) => product._id === productId);
+
+      if (!findProduct) {
+        throw new Error("Product not found.");
       }
-      return item;
-    });
-    setItemsInCart(updated);
-    setCount(count + 1);
-    calculateOrderCost();
+
+      if (findProduct.hasSizes) {
+        findProduct.sizes.map((size) => {
+          if (size._id === sizeId) {
+            // incrementProductQuantity the quantity of the found product
+            size.sizeQuantity += 1;
+          }
+        });
+        itemsInCart.map((item) => {
+          if (item.productId === productId && item.sizeId === sizeId) {
+            item.quantity += 1;
+          }
+        });
+      } else if (!findProduct.hasSizes) {
+        // incrementProductQuantity the quantity of the found product
+        findProduct.quantity += 1;
+        itemsInCart.map((item) => {
+          if (item.productId === productId) {
+            item.quantity += 1;
+          }
+        });
+      }
+
+      console.log(findProduct);
+      console.log(itemsInCart);
+    } catch (error) {
+      console.error("Error incrementing product quantity:", error.message);
+      // You can handle the error appropriately, such as displaying an error message to the user.
+    }
   };
 
-  // Decrement product quantity
   const decrementProductQuantity = (productId, sizeId) => {
-    const updated = itemsInCart.map((item) => {
-      if (item.productId === productId && (!sizeId || item.sizeId === sizeId)) {
-        const newQty = item.quantity > 1 ? item.quantity - 1 : 0;
-        return { ...item, quantity: newQty };
+    try {
+      // Decrement the count state
+      setCount(count - 1);
+
+      // Find the product either in the order or in all products
+      const findProduct =
+        productOrderToUpdate.length > 0
+          ? productOrderToUpdate.find((product) => product._id === productId)
+          : allProducts.find((product) => product._id === productId);
+
+      console.log({ findProduct });
+      if (!findProduct) {
+        throw new Error("Product not found.");
       }
-      return item;
-    }).filter((item) => item.quantity > 0);
-    setItemsInCart(updated);
-    setCount(count - 1);
-    calculateOrderCost();
+
+      if (findProduct.hasSizes) {
+        findProduct.sizes.map((size) => {
+          if (size._id === sizeId) {
+            // incrementProductQuantity the quantity of the found product
+            if (size.sizeQuantity < 2) {
+              size.sizeQuantity = 0;
+              findProduct.notes = "";
+              deleteItemFromCart(productId, sizeId);
+            } else {
+              size.sizeQuantity -= 1;
+            }
+          }
+        });
+        itemsInCart.map((item) => {
+          if (item.productId === productId && item.sizeId === sizeId) {
+            // incrementProductQuantity the quantity of the found product
+            if (item.quantity < 2) {
+              item.quantity = 0;
+              findProduct.notes = "";
+              deleteItemFromCart(productId, sizeId);
+            } else {
+              item.quantity -= 1;
+            }
+          }
+        });
+      } else if (!findProduct.hasSizes) {
+        // incrementProductQuantity the quantity of the found product
+        if (findProduct.quantity < 2) {
+          findProduct.quantity = 0;
+          findProduct.notes = "";
+          deleteItemFromCart(productId);
+        } else {
+          findProduct.quantity -= 1;
+          itemsInCart.map((item) => {
+            if (item.productId === productId) {
+              item.quantity -= 1;
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error decrementing product quantity:", error.message);
+    }
   };
 
   // Calculate order total cost
   const calculateOrderCost = () => {
-    let total = 0;
-    itemsInCart.forEach((item) => {
-      const basePrice = item.priceAfterDiscount > 0 ? item.priceAfterDiscount : item.price;
-      const itemTotal = basePrice * item.quantity;
-      const extrasTotal = item.extras?.reduce((sum, ex) => sum + (ex.price || 0), 0) || 0;
-      item.totalprice = itemTotal + extrasTotal;
-      total += item.totalprice;
-    });
-    setCostOrder(total);
+    try {
+      let totalCost = 0;
+
+      // Determine which list to operate on based on the presence of items in itemsInCart or productOrderToUpdate
+      const itemsList =
+        itemsInCart.length > 0 ? itemsInCart : productOrderToUpdate;
+
+      // Calculate total cost based on the items in the list
+      itemsList.forEach((item) => {
+        let totalExtras = 0; // Reset totalExtras for each item
+        const itemTotalPrice =
+          item.priceAfterDiscount > 0
+            ? item.priceAfterDiscount * item.quantity
+            : item.price * item.quantity;
+
+        if (item.extras.length > 0) {
+          item.extras.forEach((extra) => {
+            if (extra) {
+              totalExtras += extra.totalExtrasPrice;
+            }
+          });
+        }
+
+        item.totalprice = itemTotalPrice + totalExtras;
+        totalCost += item.totalprice;
+        totalExtras = 0;
+      });
+
+      console.log({ totalCost });
+      // Update the state with the total cost
+      setcostOrder(totalCost);
+    } catch (error) {
+      console.error("Error calculating order cost:", error.message);
+      // You can handle the error appropriately, such as displaying an error message to the user.
+    }
   };
 
   // Context value

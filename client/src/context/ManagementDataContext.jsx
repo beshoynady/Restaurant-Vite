@@ -17,8 +17,9 @@ const ManagementDataProvider = ({ children }) => {
 
   // Filters & Pagination
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
-  const [timeFilter, setTimeFilter] = useState("all"); // today, week, etc.
-  const [dateRange, setDateRange] = useState({ start: null, end: null }); // custom range
+
+          const [StartDate, setStartDate] = useState(new Date());
+        const [EndDate, setEndDate] = useState(new Date());
 
   // Fetch all orders
   const getAllOrders = async () => {
@@ -61,38 +62,99 @@ const ManagementDataProvider = ({ children }) => {
     }
   };
 
+
+      const [startPagination, setStartPagination] = useState(0);
+      const [endPagination, setEndPagination] = useState(5);
+    
+      // const [pagination, setpagination] = useState(5)
+      const EditPagination = (e) => {
+        if (e.target.innerHTML === "التالي") {
+          setStartPagination(startPagination + 5);
+          setEndPagination(endPagination + 5);
+        } else if (e.target.innerHTML === "السابق") {
+          if (endPagination <= 5) {
+            setStartPagination(0);
+            setEndPagination(5);
+          } else {
+            setStartPagination(startPagination - 5);
+            setEndPagination(endPagination - 5);
+          }
+        } else {
+          setStartPagination(e.target.innerHTML * 5 - 5);
+          setEndPagination(e.target.innerHTML * 5);
+        }
+      };
+
   // Filter by relative time range
+
+
   const filterByTime = (timeRange, array) => {
+    let filtered = [];
+
     const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const startOfWeek = new Date(startOfToday);
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfYear = new Date(now.getFullYear(), 0, 1);
 
+    // console.log({
+    //   now,
+    //   startOfToday,
+    //   startOfWeek,
+    //   startOfMonth,
+    //   startOfYear,
+    //   day: new Date().getDay(),
+    //   date: new Date().getDate(),
+    //   month: new Date().getMonth(),
+    //   year: new Date().getFullYear(),
+    // });
+
     switch (timeRange) {
       case "today":
-        return array.filter((item) => new Date(item.createdAt) >= startOfToday);
+        filtered = array.filter(
+          (item) => new Date(item.createdAt) >= startOfToday
+        );
+        break;
       case "week":
-        return array.filter((item) => new Date(item.createdAt) >= startOfWeek);
+        filtered = array.filter(
+          (item) => new Date(item.createdAt) >= startOfWeek
+        );
+        break;
       case "month":
-        return array.filter((item) => new Date(item.createdAt) >= startOfMonth);
+        filtered = array.filter(
+          (item) => new Date(item.createdAt) >= startOfMonth
+        );
+        break;
       case "year":
-        return array.filter((item) => new Date(item.createdAt) >= startOfYear);
+        filtered = array.filter(
+          (item) => new Date(item.createdAt) >= startOfYear
+        );
+        break;
       default:
-        return array;
+        filtered = array;
     }
+
+    return filtered;
   };
+      
 
   // Filter by custom date range
   const filterByDateRange = (array) => {
-    if (!dateRange.start || !dateRange.end) return array;
-    const start = new Date(dateRange.start);
-    const end = new Date(dateRange.end);
-    return array.filter((item) => {
-      const created = new Date(item.createdAt);
-      return created >= start && created <= end;
+    const start = new Date(StartDate);
+    const end = new Date(EndDate);
+
+    const filtered = array.filter((item) => {
+      const createdAt = new Date(item.createdAt);
+      return createdAt >= start && createdAt <= end;
     });
+
+    return filtered;
   };
 
   // Auto-fetch all data on mount
