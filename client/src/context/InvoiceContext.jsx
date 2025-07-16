@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useCartCard } from './CartContext';
+import { useCartCard } from './CartCardContext';
 import { useSocket } from './SocketContext';
 import { useAuth } from './AuthContext';
 import { useManagementData } from './ManagementDataContext';

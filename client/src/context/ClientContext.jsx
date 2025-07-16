@@ -4,7 +4,7 @@ import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 import { toast } from 'react-toastify';
 import { useShared } from './SharedContext';
-import { useCartCard } from './CartContext';
+import { useCartCard } from './CartCardContext';
 import { useAuth } from './AuthContext';
 import { useSocket } from './SocketContext';
 
