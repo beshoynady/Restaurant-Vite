@@ -150,11 +150,11 @@ const ProfitLoss = React.lazy(() =>
 
 import { AuthProvider } from "./context/AuthContext";
 import { SharedProvider } from "./context/SharedContext";
-import { CartCardProvider } from "./context/CartContext";
+import { CartCardProvider } from "./context/CartCardContext";
 import { SocketProvider } from "./context/SocketContext";
 import { ManagementDataProvider } from "./context/ManagementDataContext";
-import InvoiceProvider from "./context/InvoiceContext";
-import ClientProvider from "./context/ClientContext";
+import {InvoiceProvider} from "./context/InvoiceContext";
+import {ClientProvider} from "./context/ClientContext";
 
 
 
