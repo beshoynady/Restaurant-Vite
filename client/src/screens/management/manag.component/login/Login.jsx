@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
 import "./Login.css";
-import { dataContext } from "../../../../App";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -8,10 +7,12 @@ import restaurant from "../../../../image/SmartRestaurant.jpg";
 import menu from "../../../../image/emenu.jpg";
 import pos from "../../../../image/pos.jpg";
 
+import { useAuth } from "../../../../context/AuthContext";
+import { useShared } from "../../../../context/SharedContext";
+
 const Login = () => {
-  const {
-    getUserInfoFromToken,
-    setIsLoading, handleGetTokenAndConfig, apiUrl } = useContext(dataContext)
+  const {getUserInfoFromToken } = useAuth()
+  const {setIsLoading, apiUrl} = useShared
 
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -36,6 +37,7 @@ const Login = () => {
   };
 
   useEffect(() => {
+  console.log(" login page")
     setIsLoading(true);
     checkIfEmployeesExist();
   }, []);

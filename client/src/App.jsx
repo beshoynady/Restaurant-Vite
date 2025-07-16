@@ -167,7 +167,7 @@ function App() {
     <BrowserRouter>
       <SharedProvider>
         <CartCardProvider>
-          <SocketProvider>
+          {/* <SocketProvider> */}
             {isLoading && <LoadingPage />}
             {!isOnline && <NoInternetPage />}
 
@@ -555,7 +555,7 @@ function App() {
 
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
-          </SocketProvider>
+          {/* </SocketProvider> */}
         </CartCardProvider>
       </SharedProvider>
     </BrowserRouter>

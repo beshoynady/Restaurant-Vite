@@ -6,10 +6,11 @@ import { Navigate, Outlet } from "react-router-dom";
 import NavBar from "./manag.component/navbar/NavBar";
 import SideBar from "./manag.component/sidebar/SideBar";
 import { ToastContainer } from "react-toastify";
+import { useShared } from "../../context/SharedContext";
+import { useAuth } from "../../context/AuthContext";
 
 const ManagLayout = () => {
-  const { employeeLoginInfo, apiUrl, handleGetTokenAndConfig } =
-    useContext(dataContext);
+  const { employeeLoginInfo } = useAuth();
 
   const isLoggedIn = employeeLoginInfo?.isAdmin && employeeLoginInfo?.isActive;
 
