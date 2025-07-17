@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { dataContext } from "../../../../App";
+import { useShared } from "../../../../context/SharedContext";
+import { useAuth } from "../../../../context/AuthContext";
+import { useSocket } from "../../../../context/SocketContext";
+import { useManagementData } from "../../../../context/ManagementDataContext";
+import { useCartCard } from "../../../../context/CartCardContext";
+import { useInvoice } from "../../../../context/InvoiceContext";
+import { useClient } from "../../../../context/ClientContext";
 import "../orders/Orders.css";
 
 const ReservationTables = () => {
@@ -95,15 +101,15 @@ const ReservationTables = () => {
           (new Date(reservation.startTime).getTime() <=
             new Date(startTime).getTime() &&
             new Date(reservation.endTime).getTime() >=
-              new Date(startTime).getTime()) ||
+            new Date(startTime).getTime()) ||
           (new Date(reservation.startTime).getTime() <=
             new Date(endTime).getTime() &&
             new Date(reservation.endTime).getTime() >=
-              new Date(endTime).getTime()) ||
+            new Date(endTime).getTime()) ||
           (new Date(startTime).getTime() <=
             new Date(reservation.startTime).getTime() &&
             new Date(endTime).getTime() >=
-              new Date(reservation.endTime).getTime())
+            new Date(reservation.endTime).getTime())
       );
 
       console.log({ filterReservationsByTable, filterReservationsByTime });
@@ -201,10 +207,10 @@ const ReservationTables = () => {
 
   const clientByName = (allusers, name) => {
     setClientName(name);
-    const client = allusers&&allusers.filter(
+    const client = allusers && allusers.filter(
       (user) => user.username.startsWith(name) === true
     );
-    if(client){
+    if (client) {
       setFilteredClients(client);
       const userId = client._id;
       setUserId(userId);
@@ -485,6 +491,7 @@ const ReservationTables = () => {
               </div>
             </div>
           </div>
+
           <table className="table table-striped table-hover">
             <thead>
               <tr>
@@ -564,6 +571,7 @@ const ReservationTables = () => {
               })}
             </tbody>
           </table>
+
           <div className="clearfix">
             <div className="hint-text text-dark">
               عرض{" "}
@@ -801,7 +809,7 @@ const ReservationTables = () => {
                             marginTop: "0.5rem",
                           }}
                         >
-                           يرجى تحديد التاريخ و وقت الحضور أولاً
+                          يرجى تحديد التاريخ و وقت الحضور أولاً
                         </div>
                       )}
                     </div>
@@ -825,7 +833,7 @@ const ReservationTables = () => {
                         }}
                       >
                         <option>الطاولات المتاحة في هذا الوقت</option>
-                        {availableTableIds&&allTable.map(
+                        {availableTableIds && allTable.map(
                           (table, i) =>
                             availableTableIds.includes(table._id) && (
                               <option key={i} value={table._id}>
@@ -956,8 +964,8 @@ const ReservationTables = () => {
                         defaultValue={
                           reservationDate
                             ? new Date(reservationDate)
-                                .toISOString()
-                                .split("T")[0]
+                              .toISOString()
+                              .split("T")[0]
                             : ""
                         }
                         onChange={(e) => {
@@ -977,9 +985,9 @@ const ReservationTables = () => {
                         defaultValue={
                           startTime
                             ? new Date(startTime)
-                                .toISOString()
-                                .split("T")[1]
-                                .slice(0, 5)
+                              .toISOString()
+                              .split("T")[1]
+                              .slice(0, 5)
                             : ""
                         }
                         onChange={(e) => {
@@ -1026,9 +1034,9 @@ const ReservationTables = () => {
                         defaultValue={
                           endTime
                             ? new Date(endTime)
-                                .toISOString()
-                                .split("T")[1]
-                                .slice(0, 5)
+                              .toISOString()
+                              .split("T")[1]
+                              .slice(0, 5)
                             : ""
                         }
                         onChange={(e) => {

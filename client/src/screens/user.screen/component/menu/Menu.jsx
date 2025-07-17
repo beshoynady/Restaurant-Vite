@@ -1,7 +1,13 @@
 import React, { useState, useContext } from "react";
 import "./Menu.css";
 import MenuCard from "./Menu-card/Menu-card";
-import { dataContext } from "../../../../App";
+import { useShared } from "../../../../context/SharedContext";
+import { useAuth } from "../../../../context/AuthContext";
+import { useSocket } from "../../../../context/SocketContext";
+import { useManagementData } from "../../../../context/ManagementDataContext";
+import { useCartCard } from "../../../../context/CartCardContext";
+import { useInvoice } from "../../../../context/InvoiceContext";
+import { useClient } from "../../../../context/ClientContext";
 
 const Menu = () => {
   const {

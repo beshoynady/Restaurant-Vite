@@ -9,6 +9,8 @@ const SharedContext = createContext();
 export const useShared = () => useContext(SharedContext);
 
 export const SharedProvider = ({ children }) => {
+
+  
   const apiUrl = import.meta.env.VITE_API_URL;
   const { handleGetTokenAndConfig } = useAuth();
 

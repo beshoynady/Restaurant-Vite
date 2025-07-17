@@ -3,44 +3,26 @@ import { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { toast } from "react-toastify";
 
+// Create Context
 const SocketContext = createContext();
 export const useSocket = () => useContext(SocketContext);
 
+// API Base
 const apiUrl = import.meta.env.VITE_API_URL;
 
-const cashierSocket = io(`${apiUrl}/cashier`, {
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  reconnectionDelay: 1000,
-});
-
-const kitchenSocket = io(`${apiUrl}/kitchen`, {
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  reconnectionDelay: 1000,
-});
-
-const GrillSocket = io(`${apiUrl}/grill`, {
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  reconnectionDelay: 1000,
-});
-
-const BarSocket = io(`${apiUrl}/bar`, {
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  reconnectionDelay: 1000,
-});
-
-const waiterSocket = io(`${apiUrl}/waiter`, {
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  reconnectionDelay: 1000,
-});
+// Helper to create socket
+const createSocket = (namespace) =>
+  io(`${apiUrl}/${namespace}`, {
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
+    transports: ["websocket"], // optional: force WebSocket
+  });
 
 export const SocketProvider = ({ children }) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
+  // Track Internet connection state
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -54,43 +36,55 @@ export const SocketProvider = ({ children }) => {
     };
   }, []);
 
+  // Create sockets once
+  const [sockets, setSockets] = useState({
+    cashierSocket: null,
+    kitchenSocket: null,
+    GrillSocket: null,
+    BarSocket: null,
+    waiterSocket: null,
+  });
+
   useEffect(() => {
-    if (isOnline) {
-      const handleConnectError = (error) => {
-        console.error("Socket connection error:", error);
-        toast.error("هناك مشكلة في نظام الإشعارات");
-      };
+    if (!isOnline) return;
 
-      cashierSocket.on("connect_error", handleConnectError);
-      kitchenSocket.on("connect_error", handleConnectError);
-      GrillSocket.on("connect_error", handleConnectError);
-      BarSocket.on("connect_error", handleConnectError);
-      waiterSocket.on("connect_error", handleConnectError);
+    // Create all sockets
+    const cashierSocket = createSocket("cashier");
+    const kitchenSocket = createSocket("kitchen");
+    const GrillSocket = createSocket("grill");
+    const BarSocket = createSocket("bar");
+    const waiterSocket = createSocket("waiter");
 
-      return () => {
-        cashierSocket.off("connect_error", handleConnectError);
-        kitchenSocket.off("connect_error", handleConnectError);
-        GrillSocket.off("connect_error", handleConnectError);
-        BarSocket.off("connect_error", handleConnectError);
-        waiterSocket.off("connect_error", handleConnectError);
+    // Handle connection errors
+    const handleError = (error) => {
+      console.error("Socket connection error:", error);
+      toast.error("⚠️ مشكلة في نظام الإشعارات");
+    };
 
-        cashierSocket.disconnect();
-        kitchenSocket.disconnect();
-        GrillSocket.disconnect();
-        BarSocket.disconnect();
-        waiterSocket.disconnect();
-      };
-    }
+    [cashierSocket, kitchenSocket, GrillSocket, BarSocket, waiterSocket].forEach((socket) => {
+      socket.on("connect_error", handleError);
+    });
+
+    setSockets({
+      cashierSocket,
+      kitchenSocket,
+      GrillSocket,
+      BarSocket,
+      waiterSocket,
+    });
+
+    return () => {
+      [cashierSocket, kitchenSocket, GrillSocket, BarSocket, waiterSocket].forEach((socket) => {
+        socket.off("connect_error", handleError);
+        socket.disconnect();
+      });
+    };
   }, [isOnline]);
 
   return (
     <SocketContext.Provider
       value={{
-        cashierSocket,
-        kitchenSocket,
-        GrillSocket,
-        BarSocket,
-        waiterSocket,
+        ...sockets,
         isOnline,
       }}
     >

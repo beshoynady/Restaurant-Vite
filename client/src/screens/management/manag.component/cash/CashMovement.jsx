@@ -1,10 +1,20 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
-import { dataContext } from "../../../../App";
 import { toast } from "react-toastify";
 import "../orders/Orders.css";
 
+import { useShared } from "../../../../context/SharedContext";
+import { useAuth } from "../../../../context/AuthContext";
+import { useSocket } from "../../../../context/SocketContext";
+import { useManagementData } from "../../../../context/ManagementDataContext";
+import { useCartCard } from "../../../../context/CartCardContext";
+import { useInvoice } from "../../../../context/InvoiceContext";
+import { useClient } from "../../../../context/ClientContext";
+
+
 const CashMovement = () => {
+  const { em }= useShared()
+
   const {
     permissionsList,
     setStartDate,
@@ -84,6 +94,7 @@ const CashMovement = () => {
       return;
     }
     try {
+      setIsLoading(true)
       const response = await axios.get(
         `${apiUrl}/api/cashregister/employee/${id}`,
         config
@@ -91,6 +102,8 @@ const CashMovement = () => {
       setemployeeCashRegisters(response.data.reverse());
     } catch (err) {
       toast.error("Error fetching cash registers");
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -171,6 +184,7 @@ const CashMovement = () => {
       return;
     }
     try {
+      setIsLoading(true)
       // Send cash movement data to the API
       const cashMovementResponse = await axios.post(
         apiUrl + "/api/cashmovement/",
@@ -218,6 +232,8 @@ const CashMovement = () => {
       console.error("Error:", error);
       // Show error toast message if an error occurs during the request processing
       toast.error("حدث خطأ أثناء معالجة الطلب");
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -644,76 +660,76 @@ const CashMovement = () => {
             <tbody>
               {AllCashMovement.length > 0
                 ? AllCashMovement.map((movement, i) => {
-                    if ((i >= startPagination) & (i < endPagination)) {
-                      return (
-                        <tr key={i}>
-                          <td>{i + 1}</td>
-                          <td>
-                            {movement.registerId
-                              ? movement.registerId.name
-                              : "No register found"}
-                          </td>
-                          {/* <td>{movement.registerId?.employee?.fullname}</td> */}
-                          <td>
-                            {
-                              operationTypesAR[
-                                operationTypesEN.findIndex(
-                                  (type) => type === movement.type
-                                )
-                              ]
-                            }
-                          </td>
-                          <td>{movement.createdBy?.fullname}</td>
-                          <td>{movement.amount}</td>
-                          <td>{movement.description}</td>
-                          <td>
-                            {movement.status === "Pending" &&
+                  if ((i >= startPagination) & (i < endPagination)) {
+                    return (
+                      <tr key={i}>
+                        <td>{i + 1}</td>
+                        <td>
+                          {movement.registerId
+                            ? movement.registerId.name
+                            : "No register found"}
+                        </td>
+                        {/* <td>{movement.registerId?.employee?.fullname}</td> */}
+                        <td>
+                          {
+                            operationTypesAR[
+                            operationTypesEN.findIndex(
+                              (type) => type === movement.type
+                            )
+                            ]
+                          }
+                        </td>
+                        <td>{movement.createdBy?.fullname}</td>
+                        <td>{movement.amount}</td>
+                        <td>{movement.description}</td>
+                        <td>
+                          {movement.status === "Pending" &&
                             movement.transferFrom ? (
-                              <>
-                                <button
-                                  className="btn btn-success col-6 h-100 px-2 py-3 m-0"
-                                  onClick={() => {
-                                    accepteTransferCash(
-                                      movement._id,
-                                      "Completed"
-                                    );
-                                  }}
-                                >
-                                  قبول
-                                </button>
-                                <button
-                                  className="btn btn-warning  col-6 h-100 px-2 py-3 m-0"
-                                  onClick={() => {
-                                    accepteTransferCash(
-                                      movement._id,
-                                      "Rejected"
-                                    );
-                                  }}
-                                >
-                                  رفض
-                                </button>
-                              </>
-                            ) : (
-                              <td>
-                                {
-                                  operationStatusAr[
-                                    operationStatusEN.findIndex(
-                                      (status) => status === movement.status
-                                    )
-                                  ]
-                                }
-                              </td>
-                            )}
-                          </td>
-                          <td>{formatDateTime(movement.createdAt)}</td>
-                          {/* <td>
+                            <>
+                              <button
+                                className="btn btn-success col-6 h-100 px-2 py-3 m-0"
+                                onClick={() => {
+                                  accepteTransferCash(
+                                    movement._id,
+                                    "Completed"
+                                  );
+                                }}
+                              >
+                                قبول
+                              </button>
+                              <button
+                                className="btn btn-warning  col-6 h-100 px-2 py-3 m-0"
+                                onClick={() => {
+                                  accepteTransferCash(
+                                    movement._id,
+                                    "Rejected"
+                                  );
+                                }}
+                              >
+                                رفض
+                              </button>
+                            </>
+                          ) : (
+                            <td>
+                              {
+                                operationStatusAr[
+                                operationStatusEN.findIndex(
+                                  (status) => status === movement.status
+                                )
+                                ]
+                              }
+                            </td>
+                          )}
+                        </td>
+                        <td>{formatDateTime(movement.createdAt)}</td>
+                        {/* <td>
                                   <a href="#editStockactionModal" className="btn btn-sm btn-primary ml-2 " data-toggle="modal" onClick={() => { setactionId(action._id); setoldBalance(action.oldBalance); setoldCost(action.oldCost); setprice(action.price) }}><i className="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
                                   <a href="#deleteStockactionModal" className="btn btn-sm btn-danger" data-toggle="modal" onClick={() => setactionId(action._id)}><i className="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                                 </td> */}
-                        </tr>
-                      );
-                    }
-                  })
+                      </tr>
+                    );
+                  }
+                })
                 : ""}
             </tbody>
           </table>
@@ -1098,26 +1114,7 @@ const CashMovement = () => {
         </div>
       </div>
 
-      {/* <div id="deleteStockactionModal" className="modal fade">
-                <div className="modal-dialog modal-lg">
-                  <div className="modal-content shadow-lg border-0 rounded ">
-                    <form onSubmit={deleteStockaction}>
-                      <div className="modal-header d-flex flex-wrap align-items-center text-light bg-primary">
-                        <h4 className="modal-title">حذف منتج</h4>
-                        <button type="button" className="close m-0 p-1" data-dismiss="modal" aria-hidden="true">&times;</button>
-                      </div>
-                      <div className="modal-body d-flex flex-wrap align-items-center p-3 text-right">
-                        <p className="text-dark f-3">هل انت متاكد من حذف هذا السجل؟</p>
-                        <p className="text-warning text-center mt-3"><small>لا يمكن الرجوع في هذا الاجراء.</small></p>
-                      </div>
-                      <div className="modal-footer d-flex flex-nowrap align-items-center justify-content-between m-0 p-1">
-                        <input type="submit" className="btn btn-warning col-6 h-100 px-2 py-3 m-0" value="حذف" />
-                        <input type="button" className="btn btn-danger col-6 h-100 px-2 py-3 m-0" data-dismiss="modal" value="إغلاق" />
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div> */}
+
     </div>
   );
 };

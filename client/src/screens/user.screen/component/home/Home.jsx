@@ -2,7 +2,13 @@ import React, { useContext, useState, useEffect } from "react";
 import "./Home.css";
 import io from "socket.io-client";
 
-import { dataContext } from "../../../../App";
+import { useShared } from "../../../../context/SharedContext";
+import { useAuth } from "../../../../context/AuthContext";
+import { useSocket } from "../../../../context/SocketContext";
+import { useManagementData } from "../../../../context/ManagementDataContext";
+import { useCartCard } from "../../../../context/CartCardContext";
+import { useInvoice } from "../../../../context/InvoiceContext";
+import { useClient } from "../../../../context/ClientContext";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";

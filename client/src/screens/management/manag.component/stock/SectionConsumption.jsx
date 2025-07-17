@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
-import { dataContext } from "../../../../App";
+import { useShared } from "../../../../context/SharedContext";
+import { useAuth } from "../../../../context/AuthContext";
+import { useSocket } from "../../../../context/SocketContext";
+import { useManagementData } from "../../../../context/ManagementDataContext";
+import { useCartCard } from "../../../../context/CartCardContext";
+import { useInvoice } from "../../../../context/InvoiceContext";
+import { useClient } from "../../../../context/ClientContext";
 import { toast, ToastContainer } from "react-toastify";
 import "../orders/Orders.css";
 

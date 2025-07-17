@@ -1,5 +1,11 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
-import { dataContext } from "../../../../App";
+import { useShared } from "../../../../context/SharedContext";
+import { useAuth } from "../../../../context/AuthContext";
+import { useSocket } from "../../../../context/SocketContext";
+import { useManagementData } from "../../../../context/ManagementDataContext";
+import { useCartCard } from "../../../../context/CartCardContext";
+import { useInvoice } from "../../../../context/InvoiceContext";
+import { useClient } from "../../../../context/ClientContext";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Navigate } from "react-router-dom";

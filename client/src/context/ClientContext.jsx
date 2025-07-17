@@ -12,6 +12,9 @@ const ClientContext = createContext();
 export const useClient = () => useContext(ClientContext);
 
 const ClientProvider = ({ children }) => {
+
+
+  
   const apiUrl = import.meta.env.VITE_API_URL;
   const { handleGetTokenAndConfig } = useAuth();
   const {
